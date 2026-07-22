@@ -1,8 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { PERSONALITIES } from "@/lib/poker/ai";
 import { PokerTable } from "@/components/poker/PokerTable";
+import { usePokerStore } from "@/lib/poker/store";
 
 export const Route = createFileRoute("/play/campaign")({
   head: () => ({
