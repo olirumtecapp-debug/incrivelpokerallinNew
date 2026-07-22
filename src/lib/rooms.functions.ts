@@ -199,6 +199,9 @@ const actionSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("raise"), amount: z.number().int().min(1) }),
   z.object({ type: z.literal("allin") }),
 ]);
+export type SubmitActionInput = z.infer<typeof actionSchema>;
+
+
 
 export const submitAction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

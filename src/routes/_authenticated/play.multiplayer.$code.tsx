@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { getRoomView, submitAction, startRoomHand, nextRoomHand, leaveRoom, toggleReady } from "@/lib/rooms.functions";
+import { getRoomView, submitAction, startRoomHand, nextRoomHand, leaveRoom, toggleReady, type SubmitActionInput } from "@/lib/rooms.functions";
 import type { GameState } from "@/lib/poker/engine";
 import { getVariant } from "@/lib/poker/variants";
 import { PlayerSeat } from "@/components/poker/PlayerSeat";
@@ -162,7 +162,7 @@ function Room() {
     navigate({ to: "/play/multiplayer" });
   }
 
-  async function handleAction(action: Parameters<typeof fnSubmit>[0]["data"]["action"]) {
+  async function handleAction(action: SubmitActionInput) {
     if (!room) return;
     try { await fnSubmit({ data: { roomId: room.id, action } }); }
     catch (e) { toast.error(e instanceof Error ? e.message : "Ação inválida"); }
