@@ -16,17 +16,17 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
+        <div className="halftone-yellow ink-border-thick hard-shadow-lg mx-auto mb-6 inline-block px-8 py-4 -rotate-2">
+          <h1 className="font-display text-7xl text-ink">404!</h1>
+        </div>
+        <h2 className="font-display mt-4 text-2xl">Página fora do baralho</h2>
+        <p className="mt-2 text-muted-foreground">Essa mão não existe. Volta pra mesa!</p>
         <div className="mt-6">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="ink-border-thick hard-shadow inline-flex items-center justify-center bg-pow-red px-6 py-3 font-display text-xl text-white transition-transform hover:-translate-y-1 hover:-translate-x-1"
           >
-            Go home
+            IR PRA MESA
           </Link>
         </div>
       </div>
@@ -44,27 +44,22 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="halftone-red ink-border-thick hard-shadow-lg mx-auto mb-6 inline-block px-8 py-4 -rotate-2">
+          <h1 className="font-display text-5xl text-white">OOPS!</h1>
+        </div>
+        <p className="mt-2 text-muted-foreground">Deu ruim aqui. Tenta de novo?</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            onClick={() => { router.invalidate(); reset(); }}
+            className="ink-border-thick hard-shadow bg-pow-yellow px-5 py-2 font-display text-xl text-ink transition-transform hover:-translate-y-1 hover:-translate-x-1"
           >
-            Try again
+            TENTAR DE NOVO
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="ink-border-thick hard-shadow bg-white px-5 py-2 font-display text-xl text-ink transition-transform hover:-translate-y-1 hover:-translate-x-1"
           >
-            Go home
+            IR PRA HOME
           </a>
         </div>
       </div>
@@ -77,21 +72,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Incrível Poker All In" },
+      { name: "description", content: "Poker Texas Hold'em em estilo HQ Pop Art. Modo Campanha, Casual, Zen e Multiplayer." },
+      { name: "author", content: "Incrível Poker" },
+      { property: "og:title", content: "Incrível Poker All In" },
+      { property: "og:description", content: "Poker Texas Hold'em em estilo HQ Pop Art." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "theme-color", content: "#f2c94c" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;900&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
   shellComponent: RootShell,
@@ -102,24 +100,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
+    <html lang="pt-BR">
+      <head><HeadContent /></head>
+      <body>{children}<Scripts /></body>
     </html>
   );
 }
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
   );
