@@ -9,38 +9,154 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TutorialRouteImport } from './routes/tutorial'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PlayZenRouteImport } from './routes/play.zen'
+import { Route as PlayMultiplayerRouteImport } from './routes/play.multiplayer'
+import { Route as PlayCasualRouteImport } from './routes/play.casual'
+import { Route as PlayCampaignRouteImport } from './routes/play.campaign'
 
+const TutorialRoute = TutorialRouteImport.update({
+  id: '/tutorial',
+  path: '/tutorial',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlayZenRoute = PlayZenRouteImport.update({
+  id: '/play/zen',
+  path: '/play/zen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayMultiplayerRoute = PlayMultiplayerRouteImport.update({
+  id: '/play/multiplayer',
+  path: '/play/multiplayer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayCasualRoute = PlayCasualRouteImport.update({
+  id: '/play/casual',
+  path: '/play/casual',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayCampaignRoute = PlayCampaignRouteImport.update({
+  id: '/play/campaign',
+  path: '/play/campaign',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tutorial': typeof TutorialRoute
+  '/play/campaign': typeof PlayCampaignRoute
+  '/play/casual': typeof PlayCasualRoute
+  '/play/multiplayer': typeof PlayMultiplayerRoute
+  '/play/zen': typeof PlayZenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tutorial': typeof TutorialRoute
+  '/play/campaign': typeof PlayCampaignRoute
+  '/play/casual': typeof PlayCasualRoute
+  '/play/multiplayer': typeof PlayMultiplayerRoute
+  '/play/zen': typeof PlayZenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/tutorial': typeof TutorialRoute
+  '/play/campaign': typeof PlayCampaignRoute
+  '/play/casual': typeof PlayCasualRoute
+  '/play/multiplayer': typeof PlayMultiplayerRoute
+  '/play/zen': typeof PlayZenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/settings'
+    | '/sitemap.xml'
+    | '/tutorial'
+    | '/play/campaign'
+    | '/play/casual'
+    | '/play/multiplayer'
+    | '/play/zen'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/settings'
+    | '/sitemap.xml'
+    | '/tutorial'
+    | '/play/campaign'
+    | '/play/casual'
+    | '/play/multiplayer'
+    | '/play/zen'
+  id:
+    | '__root__'
+    | '/'
+    | '/settings'
+    | '/sitemap.xml'
+    | '/tutorial'
+    | '/play/campaign'
+    | '/play/casual'
+    | '/play/multiplayer'
+    | '/play/zen'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SettingsRoute: typeof SettingsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TutorialRoute: typeof TutorialRoute
+  PlayCampaignRoute: typeof PlayCampaignRoute
+  PlayCasualRoute: typeof PlayCasualRoute
+  PlayMultiplayerRoute: typeof PlayMultiplayerRoute
+  PlayZenRoute: typeof PlayZenRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tutorial': {
+      id: '/tutorial'
+      path: '/tutorial'
+      fullPath: '/tutorial'
+      preLoaderRoute: typeof TutorialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +164,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/play/zen': {
+      id: '/play/zen'
+      path: '/play/zen'
+      fullPath: '/play/zen'
+      preLoaderRoute: typeof PlayZenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/multiplayer': {
+      id: '/play/multiplayer'
+      path: '/play/multiplayer'
+      fullPath: '/play/multiplayer'
+      preLoaderRoute: typeof PlayMultiplayerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/casual': {
+      id: '/play/casual'
+      path: '/play/casual'
+      fullPath: '/play/casual'
+      preLoaderRoute: typeof PlayCasualRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/campaign': {
+      id: '/play/campaign'
+      path: '/play/campaign'
+      fullPath: '/play/campaign'
+      preLoaderRoute: typeof PlayCampaignRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SettingsRoute: SettingsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TutorialRoute: TutorialRoute,
+  PlayCampaignRoute: PlayCampaignRoute,
+  PlayCasualRoute: PlayCasualRoute,
+  PlayMultiplayerRoute: PlayMultiplayerRoute,
+  PlayZenRoute: PlayZenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
