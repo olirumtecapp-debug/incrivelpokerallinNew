@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import logo from "@/assets/logo.png";
 import heroBg from "@/assets/hero-bg.jpg";
 import { ComicButton } from "@/components/comic/ComicButton";
+import { LandscapeHint } from "@/components/comic/LandscapeHint";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,12 +33,15 @@ function Home() {
       }}
     >
       <div className="absolute inset-0 halftone opacity-[0.04] pointer-events-none" />
-      <div className="relative max-w-6xl mx-auto px-4 py-6 md:py-10">
+      <div className="relative max-w-6xl mx-auto px-4 py-4 md:py-8">
+        <div className="mb-3 md:hidden">
+          <LandscapeHint dismissible />
+        </div>
         <div className="flex flex-col items-center">
-          <img src={logo} alt="Incrível Poker All In" className="w-full max-w-[520px] h-auto drop-shadow-[6px_6px_0_rgba(0,0,0,0.6)]" />
+          <img src={logo} alt="Incrível Poker All In" className="w-full max-w-[200px] sm:max-w-[240px] md:max-w-[300px] h-auto drop-shadow-[6px_6px_0_rgba(0,0,0,0.6)]" />
         </div>
 
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+        <div className="mt-6 md:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
           {MODES.map((m) => (
             <Link key={m.to} to={m.to} className="block group">
               <div className={`${m.color} ink-border-thick hard-shadow-lg rounded-lg p-5 md:p-6 transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1 relative overflow-hidden`}>
