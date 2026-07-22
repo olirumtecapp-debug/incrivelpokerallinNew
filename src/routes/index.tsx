@@ -3,6 +3,8 @@ import logo from "@/assets/logo.png";
 import heroBg from "@/assets/hero-bg.jpg";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { LandscapeHint } from "@/components/comic/LandscapeHint";
+import { FullscreenToggle } from "@/components/comic/FullscreenToggle";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,15 +43,15 @@ function Home() {
           <img src={logo} alt="Incrível Poker All In" className="w-full max-w-[200px] sm:max-w-[240px] md:max-w-[300px] h-auto drop-shadow-[6px_6px_0_rgba(0,0,0,0.6)]" />
         </div>
 
-        <div className="mt-6 md:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+        <div className="mt-6 md:mt-8 grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
           {MODES.map((m) => (
             <Link key={m.to} to={m.to} className="block group">
-              <div className={`${m.color} ink-border-thick hard-shadow-lg rounded-lg p-5 md:p-6 transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1 relative overflow-hidden`}>
-                <div className="absolute -top-4 -right-4 text-8xl opacity-20">{m.emoji}</div>
+              <div className={`${m.color} ink-border-thick hard-shadow-lg rounded-lg p-3 md:p-4 transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1 relative overflow-hidden`}>
+                <div className="absolute -top-3 -right-3 text-6xl opacity-20">{m.emoji}</div>
                 <div className="relative">
-                  <div className="text-4xl mb-2">{m.emoji}</div>
-                  <h2 className="font-display text-3xl md:text-4xl">{m.title}</h2>
-                  <p className="font-body text-sm md:text-base font-semibold opacity-90">{m.subtitle}</p>
+                  <div className="text-2xl mb-1">{m.emoji}</div>
+                  <h2 className="font-display text-xl md:text-2xl">{m.title}</h2>
+                  <p className="font-body text-xs md:text-sm font-semibold opacity-90">{m.subtitle}</p>
                 </div>
               </div>
             </Link>
@@ -57,14 +59,16 @@ function Home() {
         </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link to="/tutorial"><ComicButton variant="secondary">📖 COMO JOGAR</ComicButton></Link>
-          <Link to="/settings"><ComicButton variant="secondary">⚙️ AJUSTES</ComicButton></Link>
+          <Link to="/tutorial"><ComicButton variant="secondary" size="sm">📖 COMO JOGAR</ComicButton></Link>
+          <Link to="/settings"><ComicButton variant="secondary" size="sm">⚙️ AJUSTES</ComicButton></Link>
         </div>
 
         <footer className="mt-10 text-center text-white/60 font-body text-xs">
           Incrível Poker All In · Feito em estilo HQ · v1.0
         </footer>
       </div>
+      <FullscreenToggle />
     </div>
   );
 }
+
