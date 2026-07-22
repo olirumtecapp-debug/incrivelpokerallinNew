@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { getRoomView, submitAction, startRoomHand, nextRoomHand, leaveRoom, toggleReady, type SubmitActionInput } from "@/lib/rooms.functions";
+import { getRoomView, submitAction, startRoomHand, nextRoomHand, leaveRoom, toggleReady, joinRoom, MAX_ROOM_PLAYERS, type SubmitActionInput } from "@/lib/rooms.functions";
 import type { GameState } from "@/lib/poker/engine";
 import { getVariant } from "@/lib/poker/variants";
 import { PlayerSeat } from "@/components/poker/PlayerSeat";
@@ -51,6 +51,8 @@ function Room() {
   const [myId, setMyId] = useState<string>("");
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [full, setFull] = useState(false);
+
 
   const fnGetView = useServerFn(getRoomView);
   const fnSubmit = useServerFn(submitAction);
@@ -58,6 +60,8 @@ function Room() {
   const fnNext = useServerFn(nextRoomHand);
   const fnLeave = useServerFn(leaveRoom);
   const fnReady = useServerFn(toggleReady);
+  const fnJoin = useServerFn(joinRoom);
+
 
   const fetchState = useCallback(async (roomId: string) => {
     try {
