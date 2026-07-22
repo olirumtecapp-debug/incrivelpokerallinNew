@@ -41,7 +41,7 @@ export function LandscapeHint({ onlyMobilePortrait = true, dismissible = false, 
   if (!visible || dismissed) return null;
 
   return (
-    <div className="ink-border-thick hard-shadow-sm halftone-yellow bg-pow-yellow rounded-md px-3 py-2 flex items-center gap-3 text-ink animate-shake-once">
+    <div className="ink-border-thick hard-shadow-sm halftone-yellow bg-pow-yellow rounded-md px-3 py-2 flex items-center gap-3 text-ink animate-shake">
       <span className="text-2xl shrink-0" aria-hidden>📱↻</span>
       <p className="font-display text-sm leading-tight flex-1 min-w-0">
         Melhor experiência com o celular <span className="whitespace-nowrap">DEITADO!</span>
