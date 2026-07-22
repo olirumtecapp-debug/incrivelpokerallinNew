@@ -190,7 +190,18 @@ function Room() {
     catch (e) { toast.error(e instanceof Error ? e.message : "Ação inválida"); }
   }
 
+  if (full) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <div className="font-display text-4xl text-pow-red">SALA CHEIA</div>
+        <p className="text-muted-foreground">Esta sala já atingiu o limite de {MAX_ROOM_PLAYERS} jogadores.</p>
+        <Link to="/play/multiplayer"><ComicButton variant="primary">VOLTAR AO LOBBY</ComicButton></Link>
+      </div>
+    );
+  }
+
   if (!room) return <div className="min-h-screen flex items-center justify-center font-display text-2xl">carregando sala...</div>;
+
 
   const isCreator = room.created_by === myId;
   const readyCount = players.filter((p) => p.is_ready).length;
@@ -207,10 +218,16 @@ function Room() {
         </header>
         <main className="max-w-3xl mx-auto p-4 md:p-6 space-y-4">
           <div className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
-            <div className="flex justify-between mb-3">
-              <h2 className="font-display text-xl">JOGADORES ({players.length}/{room.max_players})</h2>
+            <div className="flex justify-between items-center mb-3 gap-2 flex-wrap">
+              <h2 className="font-display text-xl flex items-center gap-2">
+                JOGADORES ({players.length}/{Math.min(room.max_players, MAX_ROOM_PLAYERS)})
+                {players.length >= Math.min(room.max_players, MAX_ROOM_PLAYERS) && (
+                  <span className="ink-border bg-pow-red text-white text-xs px-2 py-0.5 font-display">CHEIA</span>
+                )}
+              </h2>
               <div className="text-sm font-bold">{getVariant(room.variant as never).name} · SB {room.small_blind} / BB {room.big_blind}</div>
             </div>
+
             <ul className="space-y-2">
               {players.map((p) => {
                 const prof = profiles.get(p.user_id);
@@ -233,12 +250,21 @@ function Room() {
                 <div className="text-sm font-bold">CÓDIGO</div>
                 <div className="font-display text-4xl tracking-widest">{room.code}</div>
               </div>
-              <div>
+              <div className="flex gap-2 justify-center flex-wrap">
                 <button
                   onClick={() => { navigator.clipboard?.writeText(room.code); toast.success("Código copiado!"); }}
                   className="ink-border bg-white px-3 py-1 font-display text-sm hover:bg-pow-yellow"
-                >📋 COPIAR</button>
+                >📋 CÓDIGO</button>
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/play/multiplayer/${room.code}`;
+                    navigator.clipboard?.writeText(url);
+                    toast.success("Link copiado!");
+                  }}
+                  className="ink-border bg-white px-3 py-1 font-display text-sm hover:bg-pow-yellow"
+                >🔗 LINK</button>
               </div>
+
             </div>
           </div>
           <div className="flex gap-3 justify-center">
