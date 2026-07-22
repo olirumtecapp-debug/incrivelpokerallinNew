@@ -32,7 +32,6 @@ export const Route = createFileRoute("/play/multiplayer/$code")({
 interface RoomRow {
   id: string;
   code: string;
-  created_by_guest: string | null;
   status: string;
   small_blind: number;
   big_blind: number;
@@ -41,7 +40,7 @@ interface RoomRow {
 }
 interface RoomPlayerRow {
   id: string; room_id: string; guest_id: string | null; display_name: string;
-  avatar_emoji: string; seat: number; stack: number; is_ready: boolean;
+  avatar_emoji: string; seat: number; stack: number; is_ready: boolean; joined_at: string;
 }
 
 function Room() {
@@ -77,7 +76,8 @@ function Room() {
 
   const fetchPlayers = useCallback(async (roomId: string, guestId: string) => {
     const { data: pls } = await supabase.from("room_players")
-      .select("*").eq("room_id", roomId).order("seat", { ascending: true });
+      .select("id, room_id, guest_id, display_name, avatar_emoji, seat, stack, is_ready, joined_at")
+      .eq("room_id", roomId).order("seat", { ascending: true });
     if (pls) {
       setPlayers(pls as RoomPlayerRow[]);
       const me = pls.find((p) => p.guest_id === guestId);
@@ -94,7 +94,7 @@ function Room() {
       sfx.unlock();
 
       const { data: r, error } = await supabase.from("rooms")
-        .select("*").eq("code", code).maybeSingle();
+        .select("id, code, status, small_blind, big_blind, variant, max_players").eq("code", code).maybeSingle();
       if (error || !r) { toast.error("Sala não encontrada"); navigate({ to: "/play/multiplayer" }); return; }
       if (cancelled) return;
       setRoom(r as RoomRow);
@@ -244,7 +244,11 @@ function Room() {
 
   if (!room) return <div className="min-h-screen flex items-center justify-center font-display text-2xl">carregando sala...</div>;
 
-  const isCreator = room.created_by_guest === myGuestId;
+  // Host = primeiro jogador a entrar (o criador da sala)
+  const hostGuestId = players.length > 0
+    ? [...players].sort((a, b) => (a.joined_at ?? "").localeCompare(b.joined_at ?? ""))[0].guest_id
+    : null;
+  const isCreator = hostGuestId !== null && hostGuestId === myGuestId;
   const readyCount = players.filter((p) => p.is_ready).length;
   const canStart = isCreator && players.length >= 2 && readyCount === players.length;
 
@@ -274,7 +278,7 @@ function Room() {
                 <li key={p.id} className="ink-border bg-white p-2 rounded flex items-center gap-3">
                   <AvatarBadge avatarId={p.avatar_emoji} size={40} />
                   <span className="font-display flex-1 truncate">{p.display_name}</span>
-                  {p.guest_id === room.created_by_guest && <span className="text-xs ink-border bg-pow-yellow px-2 py-0.5 font-display">HOST</span>}
+                  {p.guest_id === hostGuestId && <span className="text-xs ink-border bg-pow-yellow px-2 py-0.5 font-display">HOST</span>}
                   <span className={`text-xs font-display px-2 py-0.5 ink-border ${p.is_ready ? "bg-pow-yellow" : "bg-muted"}`}>
                     {p.is_ready ? "PRONTO" : "aguardando"}
                   </span>
