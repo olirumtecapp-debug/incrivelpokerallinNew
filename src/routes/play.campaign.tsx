@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { PERSONALITIES } from "@/lib/poker/ai";
 import { PokerTable } from "@/components/poker/PokerTable";
+import { AvatarBadge } from "@/components/multiplayer/AvatarPicker";
 import { usePokerStore } from "@/lib/poker/store";
 
 export const Route = createFileRoute("/play/campaign")({
@@ -139,7 +140,7 @@ function CampaignMatch({ stage, boss, onExit, onWin }: {
             "{stage.intro}"
           </div>
           <div className="mt-4 flex items-center justify-center gap-3">
-            <div className={`${boss.avatarBg} ink-border-thick w-14 h-14 rounded-full flex items-center justify-center text-3xl`}>{boss.emoji}</div>
+            <AvatarBadge avatarId={boss.avatarId} size={56} className="ink-border-thick" />
             <div>
               <div className="font-display text-lg">{boss.name}</div>
               <div className="text-xs font-bold text-pow-red">{boss.title}</div>
