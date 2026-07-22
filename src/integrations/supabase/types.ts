@@ -14,13 +14,180 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      game_actions: {
+        Row: {
+          action_type: string
+          created_at: string
+          hand_number: number
+          id: number
+          payload: Json
+          room_id: string
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          hand_number?: number
+          id?: number
+          payload?: Json
+          room_id: string
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          hand_number?: number
+          id?: number
+          payload?: Json
+          room_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_actions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_states: {
+        Row: {
+          room_id: string
+          state: Json
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          room_id: string
+          state: Json
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          room_id?: string
+          state?: Json
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_states_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: true
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_emoji: string
+          created_at: string
+          id: string
+          username: string
+        }
+        Insert: {
+          avatar_emoji?: string
+          created_at?: string
+          id: string
+          username: string
+        }
+        Update: {
+          avatar_emoji?: string
+          created_at?: string
+          id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      room_players: {
+        Row: {
+          id: string
+          is_ready: boolean
+          joined_at: string
+          room_id: string
+          seat: number
+          stack: number
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_ready?: boolean
+          joined_at?: string
+          room_id: string
+          seat: number
+          stack?: number
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_ready?: boolean
+          joined_at?: string
+          room_id?: string
+          seat?: number
+          stack?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          big_blind: number
+          code: string
+          created_at: string
+          created_by: string
+          id: string
+          max_players: number
+          small_blind: number
+          start_stack: number
+          status: string
+          variant: string
+        }
+        Insert: {
+          big_blind?: number
+          code: string
+          created_at?: string
+          created_by: string
+          id?: string
+          max_players?: number
+          small_blind?: number
+          start_stack?: number
+          status?: string
+          variant?: string
+        }
+        Update: {
+          big_blind?: number
+          code?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          max_players?: number
+          small_blind?: number
+          start_stack?: number
+          status?: string
+          variant?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_room_member: {
+        Args: { _room_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
