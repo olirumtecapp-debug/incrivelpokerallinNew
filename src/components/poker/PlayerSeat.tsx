@@ -17,8 +17,7 @@ interface Props {
 export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner, holeCount = 2, isMe = false }: Props) {
   const showCards = !player.folded && (reveal || !player.isBot);
   const slots = holeCount === 4 ? [0, 1, 2, 3] : [0, 1];
-  const size = isMe ? (holeCount === 4 ? "sm" : "md") : "sm";
-  const shortSize = isMe ? "sm" : "sm";
+  const size = isMe ? "md" : "sm";
   return (
     <div className={cn(
       "relative flex flex-col items-center gap-1",
@@ -34,17 +33,14 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
         </div>
       )}
 
-      <div className={cn("flex gap-1", holeCount === 4 && "grid grid-cols-2 gap-1")}>
+      <div className={cn("flex gap-1 shrink-0", holeCount === 4 && "grid grid-cols-2 gap-1")}>
         {slots.map((i) => {
           const c = player.hole[i];
-          const s = size;
-          const cls = isMe && size === "md" ? "short:[&>*]:!w-16 short:[&>*]:!h-24" : "";
-          if (!c) return <div key={i} className={cls}><PlayingCard size={s} faceDown dealDelay={i * 60} /></div>;
-          return <div key={i} className={cls}><PlayingCard card={c} faceDown={!showCards} size={s} dealDelay={i * 60} /></div>;
+          if (!c) return <PlayingCard key={i} size={size} faceDown dealDelay={i * 60} />;
+          return <PlayingCard key={i} card={c} faceDown={!showCards} size={size} dealDelay={i * 60} />;
         })}
-        {/* shortSize used to satisfy no-unused */}
-        <span className="hidden">{shortSize}</span>
       </div>
+
 
 
       <div className={cn(
