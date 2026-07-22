@@ -10,10 +10,13 @@ interface Props {
   reveal: boolean;
   taunt?: string;
   isWinner?: boolean;
+  holeCount?: number; // 2 (Hold'em/Short) ou 4 (Omaha)
 }
 
-export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner }: Props) {
+export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner, holeCount = 2 }: Props) {
   const showCards = !player.folded && (reveal || !player.isBot);
+  const slots = holeCount === 4 ? [0, 1, 2, 3] : [0, 1];
+  const size = holeCount === 4 ? "sm" : "sm";
   return (
     <div className={cn(
       "relative flex flex-col items-center gap-2",
@@ -28,12 +31,12 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
         </div>
       )}
 
-      <div className="flex gap-1">
-        {player.hole.length === 0
-          ? [0, 1].map((i) => <PlayingCard key={i} size="sm" faceDown dealDelay={i * 80} />)
-          : player.hole.map((c, i) => (
-              <PlayingCard key={i} card={c} faceDown={!showCards} size="sm" dealDelay={i * 80} />
-            ))}
+      <div className={cn("flex gap-1", holeCount === 4 && "grid grid-cols-2 gap-1")}>
+        {slots.map((i) => {
+          const c = player.hole[i];
+          if (!c) return <PlayingCard key={i} size={size} faceDown dealDelay={i * 60} />;
+          return <PlayingCard key={i} card={c} faceDown={!showCards} size={size} dealDelay={i * 60} />;
+        })}
       </div>
 
       <div className={cn(

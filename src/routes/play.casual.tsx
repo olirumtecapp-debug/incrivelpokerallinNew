@@ -2,26 +2,29 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import type { Difficulty } from "@/lib/poker/ai";
 import { PERSONALITIES } from "@/lib/poker/ai";
+import { VARIANT_LIST, type VariantId } from "@/lib/poker/variants";
 import { PokerTable } from "@/components/poker/PokerTable";
 import { ComicButton } from "@/components/comic/ComicButton";
+import { sfx } from "@/lib/audio/sfx";
 
 export const Route = createFileRoute("/play/casual")({
   head: () => ({
     meta: [
       { title: "Casual — Incrível Poker All In" },
-      { name: "description", content: "Partida casual de Texas Hold'em contra IA em estilo HQ." },
+      { name: "description", content: "Partida casual: Hold'em, Omaha ou Short Deck contra a IA em estilo HQ." },
       { property: "og:title", content: "Casual · Incrível Poker" },
-      { property: "og:description", content: "Escolha o adversário e jogue." },
+      { property: "og:description", content: "Escolha modalidade, adversário e jogue." },
     ],
   }),
   component: CasualPage,
 });
 
 function CasualPage() {
+  const [variant, setVariant] = useState<VariantId>("holdem");
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
 
   if (difficulty) {
-    return <PokerTable difficulty={difficulty} modeLabel={`CASUAL · ${difficulty.toUpperCase()}`} />;
+    return <PokerTable difficulty={difficulty} variant={variant} modeLabel={`CASUAL · ${difficulty.toUpperCase()}`} />;
   }
 
   return (
@@ -32,13 +35,31 @@ function CasualPage() {
       </header>
       <main className="max-w-4xl mx-auto p-4 md:p-6">
         <div className="halftone-yellow ink-border-thick hard-shadow-sm inline-block px-4 py-1 -rotate-2 mb-4">
+          <h2 className="font-display text-2xl">MODALIDADE</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+          {VARIANT_LIST.map((v) => (
+            <button
+              key={v.id}
+              onClick={() => { sfx.unlock(); sfx.play("click"); setVariant(v.id); }}
+              className={`ink-border-thick hard-shadow-sm rounded-lg p-4 text-left transition-transform hover:-translate-y-1 ${variant === v.id ? "bg-pow-yellow" : "bg-card"}`}
+            >
+              <div className="text-3xl mb-1">{v.emoji}</div>
+              <div className="font-display text-lg">{v.name}</div>
+              <div className="text-xs text-muted-foreground">{v.description}</div>
+              {variant === v.id && <div className="mt-2 font-display text-sm text-pow-red">✓ ESCOLHIDA</div>}
+            </button>
+          ))}
+        </div>
+
+        <div className="halftone-yellow ink-border-thick hard-shadow-sm inline-block px-4 py-1 -rotate-2 mb-4">
           <h2 className="font-display text-2xl">ESCOLHA O ADVERSÁRIO</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {PERSONALITIES.map((p) => (
             <button
               key={p.id}
-              onClick={() => setDifficulty(p.difficulty)}
+              onClick={() => { sfx.unlock(); setDifficulty(p.difficulty); }}
               className="ink-border-thick hard-shadow bg-card rounded-lg p-4 text-left transition-transform hover:-translate-y-1 hover:-translate-x-1"
             >
               <div className="flex items-center gap-3">

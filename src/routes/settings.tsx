@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ComicButton } from "@/components/comic/ComicButton";
+import { VARIANT_LIST } from "@/lib/poker/variants";
+import { sfx } from "@/lib/audio/sfx";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
       { title: "Ajustes — Incrível Poker All In" },
-      { name: "description", content: "Personalize temas da mesa e preferências do jogo." },
+      { name: "description", content: "Personalize tema da mesa, som e modalidades preferidas." },
       { property: "og:title", content: "Ajustes · Incrível Poker" },
       { property: "og:description", content: "Escolha o tema da mesa e outras preferências." },
     ],
@@ -22,10 +24,14 @@ const THEMES = [
 
 function Settings() {
   const [theme, setTheme] = useState<string>("hq");
+  const [sfxOn, setSfxOn] = useState<boolean>(true);
+  const [volume, setVolume] = useState<number>(40);
 
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem("ip_theme") : null;
     if (saved) setTheme(saved);
+    setSfxOn(sfx.getEnabled());
+    setVolume(Math.round(sfx.getVolume() * 100));
   }, []);
 
   useEffect(() => {
@@ -50,7 +56,7 @@ function Settings() {
             {THEMES.map((t) => (
               <button
                 key={t.id}
-                onClick={() => setTheme(t.id)}
+                onClick={() => { sfx.unlock(); sfx.play("click"); setTheme(t.id); }}
                 className={`ink-border-thick hard-shadow-sm rounded-lg p-4 text-left transition-transform hover:-translate-y-1 ${theme === t.id ? "bg-pow-yellow" : "bg-card"}`}
               >
                 <div className={`w-full h-16 ${t.swatch} ink-border rounded mb-3`} />
@@ -63,20 +69,53 @@ function Settings() {
         </section>
 
         <section>
-          <h2 className="font-display text-2xl mb-3">MODALIDADES</h2>
+          <h2 className="font-display text-2xl mb-3">SOM</h2>
+          <div className="ink-border-thick hard-shadow-sm bg-card p-4 rounded-lg space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={sfxOn}
+                onChange={(e) => { sfx.unlock(); setSfxOn(e.target.checked); sfx.setEnabled(e.target.checked); if (e.target.checked) sfx.play("chipDrop"); }}
+                className="w-5 h-5"
+              />
+              <span className="font-display text-lg">Efeitos sonoros</span>
+            </label>
+            <div>
+              <div className="flex justify-between font-body text-sm font-bold mb-1">
+                <span>Volume</span>
+                <span className="text-pow-red">{volume}%</span>
+              </div>
+              <input
+                type="range" min={0} max={100} step={5}
+                value={volume}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value, 10);
+                  setVolume(v); sfx.setVolume(v / 100);
+                }}
+                onMouseUp={() => { sfx.unlock(); sfx.play("chipDrop"); }}
+                onTouchEnd={() => { sfx.unlock(); sfx.play("chipDrop"); }}
+                className="w-full"
+                disabled={!sfxOn}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 className="font-display text-2xl mb-3">MODALIDADES DISPONÍVEIS</h2>
           <div className="space-y-2">
-            <div className="ink-border hard-shadow-sm bg-card p-3 rounded flex items-center justify-between">
-              <div><div className="font-display text-lg">Texas Hold'em</div><div className="text-xs text-muted-foreground">Padrão</div></div>
-              <span className="font-display text-pow-red">✓ ATIVO</span>
-            </div>
-            <div className="ink-border hard-shadow-sm bg-muted p-3 rounded flex items-center justify-between opacity-60">
-              <div><div className="font-display text-lg">Omaha</div><div className="text-xs text-muted-foreground">4 hole cards</div></div>
-              <span className="font-display text-xs">EM BREVE</span>
-            </div>
-            <div className="ink-border hard-shadow-sm bg-muted p-3 rounded flex items-center justify-between opacity-60">
-              <div><div className="font-display text-lg">Short Deck</div><div className="text-xs text-muted-foreground">Baralho 36 cartas</div></div>
-              <span className="font-display text-xs">EM BREVE</span>
-            </div>
+            {VARIANT_LIST.map((v) => (
+              <div key={v.id} className="ink-border hard-shadow-sm bg-card p-3 rounded flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="text-2xl shrink-0">{v.emoji}</span>
+                  <div className="min-w-0">
+                    <div className="font-display text-lg">{v.name}</div>
+                    <div className="text-xs text-muted-foreground">{v.description}</div>
+                  </div>
+                </div>
+                <span className="font-display text-pow-red text-sm shrink-0">✓ ATIVA</span>
+              </div>
+            ))}
           </div>
         </section>
 
