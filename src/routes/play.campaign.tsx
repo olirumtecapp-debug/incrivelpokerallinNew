@@ -37,7 +37,7 @@ const STORAGE_KEY = "ip_campaign_progress";
 function CampaignPage() {
   const [progress, setProgress] = useState<number>(1);
   const [activeStage, setActiveStage] = useState<Stage | null>(null);
-  const navigate = useNavigate();
+  
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -167,9 +167,7 @@ function CampaignMatch({ stage, boss, onExit, onWin }: {
     </div>
   );
 }
-
 // Observa a store pra marcar vitória e liberar próxima fase
-import { usePokerStore } from "@/lib/poker/store";
 function CampaignWinWatcher({ onWin }: { onWin: () => void }) {
   const state = usePokerStore((s) => s.state);
   useEffect(() => {
