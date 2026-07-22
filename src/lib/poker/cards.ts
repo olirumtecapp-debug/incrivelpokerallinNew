@@ -1,3 +1,5 @@
+import type { VariantId } from "./variants";
+
 export type Suit = "S" | "H" | "D" | "C";
 export type Rank = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14;
 
@@ -8,6 +10,7 @@ export interface Card {
 
 export const SUITS: Suit[] = ["S", "H", "D", "C"];
 export const RANKS: Rank[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+export const SHORT_DECK_RANKS: Rank[] = [6, 7, 8, 9, 10, 11, 12, 13, 14];
 
 export const SUIT_LABEL: Record<Suit, string> = { S: "♠", H: "♥", D: "♦", C: "♣" };
 export const SUIT_NAME: Record<Suit, string> = { S: "Espadas", H: "Copas", D: "Ouros", C: "Paus" };
@@ -19,13 +22,13 @@ export const RANK_LABEL: Record<Rank, string> = {
 export function isRed(suit: Suit): boolean { return suit === "H" || suit === "D"; }
 export function cardId(c: Card): string { return `${c.rank}${c.suit}`; }
 
-export function newDeck(): Card[] {
+export function newDeck(variant?: VariantId): Card[] {
+  const ranks = variant === "shortdeck" ? SHORT_DECK_RANKS : RANKS;
   const deck: Card[] = [];
-  for (const s of SUITS) for (const r of RANKS) deck.push({ rank: r, suit: s });
+  for (const s of SUITS) for (const r of ranks) deck.push({ rank: r, suit: s });
   return deck;
 }
 
-// Fisher–Yates com crypto quando disponível
 export function shuffle<T>(arr: T[]): T[] {
   const out = [...arr];
   const cryptoObj = typeof globalThis !== "undefined" ? (globalThis as { crypto?: Crypto }).crypto : undefined;
