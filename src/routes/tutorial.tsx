@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router"; // regen
 import { HandRank, HAND_NAME } from "@/lib/poker/evaluator";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { VARIANT_LIST } from "@/lib/poker/variants";
