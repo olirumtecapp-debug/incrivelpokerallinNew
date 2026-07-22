@@ -32,7 +32,6 @@ export const Route = createFileRoute("/play/multiplayer/$code")({
 interface RoomRow {
   id: string;
   code: string;
-  created_by_guest: string | null;
   status: string;
   small_blind: number;
   big_blind: number;
