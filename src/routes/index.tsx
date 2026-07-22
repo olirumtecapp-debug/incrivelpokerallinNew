@@ -9,8 +9,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Incrível Poker All In — Poker HQ Pop Art" },
       { name: "description", content: "Jogue Texas Hold'em com visual de história em quadrinhos. Modo Campanha, Casual, Zen e Multiplayer." },
-      { property: "og:title", content: "Incrível Poker All In" },
-      { property: "og:description", content: "Poker Texas Hold'em em estilo HQ Pop Art." },
+      { property: "og:title", content: "Incrível Poker All In — Poker HQ Pop Art" },
+      { property: "og:description", content: "Jogue Texas Hold'em com visual de história em quadrinhos. Modo Campanha, Casual, Zen e Multiplayer." },
     ],
   }),
   component: Home,
