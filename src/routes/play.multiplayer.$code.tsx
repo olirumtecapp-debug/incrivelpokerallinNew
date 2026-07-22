@@ -352,6 +352,7 @@ function Room() {
         <div className="flex flex-wrap gap-1.5 md:gap-3 justify-center pt-1">
           {others.map((p) => {
             const idx = gameState.players.findIndex((x) => x.id === p.id);
+            const pr = players.find((rp) => rp.guest_id === p.id);
             return (
               <PlayerSeat
                 key={p.id}
@@ -361,6 +362,7 @@ function Room() {
                 reveal={gameState.street === "showdown"}
                 isWinner={winnerIds.has(p.id)}
                 holeCount={v.holeCards}
+                avatarId={pr?.avatar_emoji}
               />
             );
           })}
@@ -393,6 +395,7 @@ function Room() {
               isWinner={winnerIds.has(me.id)}
               holeCount={v.holeCards}
               isMe
+              avatarId={players.find((rp) => rp.guest_id === myGuestId)?.avatar_emoji}
             />
           </div>
         )}
