@@ -104,31 +104,40 @@ export type Database = {
       }
       room_players: {
         Row: {
+          avatar_emoji: string
+          display_name: string
+          guest_id: string | null
           id: string
           is_ready: boolean
           joined_at: string
           room_id: string
           seat: number
           stack: number
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          avatar_emoji?: string
+          display_name?: string
+          guest_id?: string | null
           id?: string
           is_ready?: boolean
           joined_at?: string
           room_id: string
           seat: number
           stack?: number
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          avatar_emoji?: string
+          display_name?: string
+          guest_id?: string | null
           id?: string
           is_ready?: boolean
           joined_at?: string
           room_id?: string
           seat?: number
           stack?: number
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -145,7 +154,8 @@ export type Database = {
           big_blind: number
           code: string
           created_at: string
-          created_by: string
+          created_by: string | null
+          created_by_guest: string | null
           id: string
           max_players: number
           small_blind: number
@@ -157,7 +167,8 @@ export type Database = {
           big_blind?: number
           code: string
           created_at?: string
-          created_by: string
+          created_by?: string | null
+          created_by_guest?: string | null
           id?: string
           max_players?: number
           small_blind?: number
@@ -169,7 +180,8 @@ export type Database = {
           big_blind?: number
           code?: string
           created_at?: string
-          created_by?: string
+          created_by?: string | null
+          created_by_guest?: string | null
           id?: string
           max_players?: number
           small_blind?: number
@@ -184,10 +196,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_room_member: {
-        Args: { _room_id: string; _user_id: string }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

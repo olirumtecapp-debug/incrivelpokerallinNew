@@ -1,19 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { VARIANT_LIST, type VariantId } from "@/lib/poker/variants";
 import { createRoom, joinRoom, MAX_ROOM_PLAYERS } from "@/lib/rooms.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { getGuestId, getGuestName, setGuestName, getGuestEmoji, setGuestEmoji, EMOJI_CHOICES } from "@/lib/guest";
 
-export const Route = createFileRoute("/_authenticated/play/multiplayer")({
+export const Route = createFileRoute("/play/multiplayer")({
   head: () => ({
     meta: [
       { title: "Multiplayer — Incrível Poker All In" },
-      { name: "description", content: "Crie uma sala privada e convide amigos pra jogar online." },
+      { name: "description", content: "Crie uma sala privada e convide amigos pra jogar poker online, sem cadastro." },
       { property: "og:title", content: "Multiplayer · Incrível Poker" },
-      { property: "og:description", content: "Sala privada, código pra compartilhar." },
+      { property: "og:description", content: "Sala privada, código pra compartilhar. Sem login." },
     ],
   }),
   component: Lobby,
@@ -29,16 +29,38 @@ function Lobby() {
   const [maxPlayers, setMaxPlayers] = useState<number>(MAX_ROOM_PLAYERS);
   const [joinCode, setJoinCode] = useState("");
   const [busy, setBusy] = useState(false);
-  const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState("");
+  const [emoji, setEmoji] = useState("🎭");
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
+    setName(getGuestName());
+    setEmoji(getGuestEmoji());
   }, []);
 
+  function persistIdentity(): { ok: boolean; guestId: string; displayName: string } {
+    const trimmed = name.trim();
+    if (trimmed.length < 2) {
+      toast.error("Digite um apelido de pelo menos 2 caracteres");
+      return { ok: false, guestId: "", displayName: "" };
+    }
+    setGuestName(trimmed);
+    setGuestEmoji(emoji);
+    return { ok: true, guestId: getGuestId(), displayName: trimmed.slice(0, 20) };
+  }
+
   async function handleCreate() {
+    const id = persistIdentity();
+    if (!id.ok) return;
     setBusy(true);
     try {
-      const { code } = await create({ data: { variant, smallBlind, bigBlind, startStack: 1000, maxPlayers } });
+      const { code } = await create({
+        data: {
+          guestId: id.guestId,
+          displayName: id.displayName,
+          avatarEmoji: emoji,
+          variant, smallBlind, bigBlind, startStack: 1000, maxPlayers,
+        },
+      });
       toast.success(`Sala criada! Código ${code}`);
       navigate({ to: "/play/multiplayer/$code", params: { code } });
     } catch (err) {
@@ -46,20 +68,23 @@ function Lobby() {
     } finally { setBusy(false); }
   }
 
-
   async function handleJoin() {
+    const id = persistIdentity();
+    if (!id.ok) return;
     setBusy(true);
     try {
-      const { code } = await join({ data: { code: joinCode.toUpperCase() } });
+      const { code } = await join({
+        data: {
+          code: joinCode.toUpperCase(),
+          guestId: id.guestId,
+          displayName: id.displayName,
+          avatarEmoji: emoji,
+        },
+      });
       navigate({ to: "/play/multiplayer/$code", params: { code } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Falhou");
     } finally { setBusy(false); }
-  }
-
-  async function signOut() {
-    await supabase.auth.signOut();
-    navigate({ to: "/" });
   }
 
   return (
@@ -67,13 +92,33 @@ function Lobby() {
       <header className="ink-border-thick bg-felt text-white p-4 flex items-center gap-3">
         <Link to="/" className="font-display text-xl text-white shrink-0">← MENU</Link>
         <h1 className="font-display text-2xl md:text-3xl truncate flex-1">👥 MULTIPLAYER</h1>
-        <div className="hidden md:flex items-center gap-2 text-sm">
-          <span className="opacity-80">{email}</span>
-          <button onClick={signOut} className="ink-border bg-pow-red text-white px-2 py-1 text-xs font-display">SAIR</button>
-        </div>
       </header>
 
       <main className="max-w-3xl mx-auto p-4 md:p-6 space-y-6">
+        <section className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
+          <h2 className="font-display text-2xl mb-3">SEU APELIDO</h2>
+          <div className="flex gap-2 items-center mb-3">
+            <div className="ink-border bg-white px-3 py-2 text-3xl">{emoji}</div>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Como te chamam?"
+              maxLength={20}
+              className="ink-border-thick bg-white px-3 py-2 font-display text-xl flex-1"
+            />
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {EMOJI_CHOICES.map((e) => (
+              <button
+                key={e}
+                type="button"
+                onClick={() => setEmoji(e)}
+                className={`ink-border w-10 h-10 text-2xl grid place-items-center rounded ${emoji === e ? "bg-pow-yellow" : "bg-white hover:bg-muted"}`}
+              >{e}</button>
+            ))}
+          </div>
+        </section>
+
         <section className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
           <h2 className="font-display text-2xl mb-4">CRIAR SALA</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
@@ -116,7 +161,7 @@ function Lobby() {
               ))}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Máximo {MAX_ROOM_PLAYERS} jogadores por sala para manter o jogo fluido.
+              Máximo {MAX_ROOM_PLAYERS} jogadores por sala.
             </p>
           </div>
 
@@ -142,8 +187,7 @@ function Lobby() {
         </section>
 
         <div className="ink-border hard-shadow-sm bg-pow-yellow rounded p-3 text-sm">
-          <b>ℹ Aviso amigável:</b> a comunicação de estado é criptografada e o servidor autoriza cada ação,
-          mas por ser um jogo entre amigos as cartas dos oponentes trafegam por Realtime — jogue com quem confia.
+          <b>ℹ Aviso:</b> jogo entre amigos, sem cadastro. Qualquer um com o código entra na sala.
         </div>
       </main>
     </div>

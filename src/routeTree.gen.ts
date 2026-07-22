@@ -13,13 +13,12 @@ import { Route as TutorialRouteImport } from './routes/tutorial'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlayZenRouteImport } from './routes/play.zen'
+import { Route as PlayMultiplayerRouteImport } from './routes/play.multiplayer'
 import { Route as PlayCasualRouteImport } from './routes/play.casual'
 import { Route as PlayCampaignRouteImport } from './routes/play.campaign'
-import { Route as AuthenticatedPlayMultiplayerRouteImport } from './routes/_authenticated/play.multiplayer'
-import { Route as AuthenticatedPlayMultiplayerCodeRouteImport } from './routes/_authenticated/play.multiplayer.$code'
+import { Route as PlayMultiplayerCodeRouteImport } from './routes/play.multiplayer.$code'
 
 const TutorialRoute = TutorialRouteImport.update({
   id: '/tutorial',
@@ -41,10 +40,6 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -53,6 +48,11 @@ const IndexRoute = IndexRouteImport.update({
 const PlayZenRoute = PlayZenRouteImport.update({
   id: '/play/zen',
   path: '/play/zen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayMultiplayerRoute = PlayMultiplayerRouteImport.update({
+  id: '/play/multiplayer',
+  path: '/play/multiplayer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayCasualRoute = PlayCasualRouteImport.update({
@@ -65,18 +65,11 @@ const PlayCampaignRoute = PlayCampaignRouteImport.update({
   path: '/play/campaign',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedPlayMultiplayerRoute =
-  AuthenticatedPlayMultiplayerRouteImport.update({
-    id: '/play/multiplayer',
-    path: '/play/multiplayer',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPlayMultiplayerCodeRoute =
-  AuthenticatedPlayMultiplayerCodeRouteImport.update({
-    id: '/$code',
-    path: '/$code',
-    getParentRoute: () => AuthenticatedPlayMultiplayerRoute,
-  } as any)
+const PlayMultiplayerCodeRoute = PlayMultiplayerCodeRouteImport.update({
+  id: '/$code',
+  path: '/$code',
+  getParentRoute: () => PlayMultiplayerRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -86,9 +79,9 @@ export interface FileRoutesByFullPath {
   '/tutorial': typeof TutorialRoute
   '/play/campaign': typeof PlayCampaignRoute
   '/play/casual': typeof PlayCasualRoute
+  '/play/multiplayer': typeof PlayMultiplayerRouteWithChildren
   '/play/zen': typeof PlayZenRoute
-  '/play/multiplayer': typeof AuthenticatedPlayMultiplayerRouteWithChildren
-  '/play/multiplayer/$code': typeof AuthenticatedPlayMultiplayerCodeRoute
+  '/play/multiplayer/$code': typeof PlayMultiplayerCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -98,23 +91,22 @@ export interface FileRoutesByTo {
   '/tutorial': typeof TutorialRoute
   '/play/campaign': typeof PlayCampaignRoute
   '/play/casual': typeof PlayCasualRoute
+  '/play/multiplayer': typeof PlayMultiplayerRouteWithChildren
   '/play/zen': typeof PlayZenRoute
-  '/play/multiplayer': typeof AuthenticatedPlayMultiplayerRouteWithChildren
-  '/play/multiplayer/$code': typeof AuthenticatedPlayMultiplayerCodeRoute
+  '/play/multiplayer/$code': typeof PlayMultiplayerCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tutorial': typeof TutorialRoute
   '/play/campaign': typeof PlayCampaignRoute
   '/play/casual': typeof PlayCasualRoute
+  '/play/multiplayer': typeof PlayMultiplayerRouteWithChildren
   '/play/zen': typeof PlayZenRoute
-  '/_authenticated/play/multiplayer': typeof AuthenticatedPlayMultiplayerRouteWithChildren
-  '/_authenticated/play/multiplayer/$code': typeof AuthenticatedPlayMultiplayerCodeRoute
+  '/play/multiplayer/$code': typeof PlayMultiplayerCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,8 +118,8 @@ export interface FileRouteTypes {
     | '/tutorial'
     | '/play/campaign'
     | '/play/casual'
-    | '/play/zen'
     | '/play/multiplayer'
+    | '/play/zen'
     | '/play/multiplayer/$code'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -138,33 +130,32 @@ export interface FileRouteTypes {
     | '/tutorial'
     | '/play/campaign'
     | '/play/casual'
-    | '/play/zen'
     | '/play/multiplayer'
+    | '/play/zen'
     | '/play/multiplayer/$code'
   id:
     | '__root__'
     | '/'
-    | '/_authenticated'
     | '/auth'
     | '/settings'
     | '/sitemap.xml'
     | '/tutorial'
     | '/play/campaign'
     | '/play/casual'
+    | '/play/multiplayer'
     | '/play/zen'
-    | '/_authenticated/play/multiplayer'
-    | '/_authenticated/play/multiplayer/$code'
+    | '/play/multiplayer/$code'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   SettingsRoute: typeof SettingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TutorialRoute: typeof TutorialRoute
   PlayCampaignRoute: typeof PlayCampaignRoute
   PlayCasualRoute: typeof PlayCasualRoute
+  PlayMultiplayerRoute: typeof PlayMultiplayerRouteWithChildren
   PlayZenRoute: typeof PlayZenRoute
 }
 
@@ -198,13 +189,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -217,6 +201,13 @@ declare module '@tanstack/react-router' {
       path: '/play/zen'
       fullPath: '/play/zen'
       preLoaderRoute: typeof PlayZenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/multiplayer': {
+      id: '/play/multiplayer'
+      path: '/play/multiplayer'
+      fullPath: '/play/multiplayer'
+      preLoaderRoute: typeof PlayMultiplayerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/play/casual': {
@@ -233,59 +224,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayCampaignRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/play/multiplayer': {
-      id: '/_authenticated/play/multiplayer'
-      path: '/play/multiplayer'
-      fullPath: '/play/multiplayer'
-      preLoaderRoute: typeof AuthenticatedPlayMultiplayerRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/play/multiplayer/$code': {
-      id: '/_authenticated/play/multiplayer/$code'
+    '/play/multiplayer/$code': {
+      id: '/play/multiplayer/$code'
       path: '/$code'
       fullPath: '/play/multiplayer/$code'
-      preLoaderRoute: typeof AuthenticatedPlayMultiplayerCodeRouteImport
-      parentRoute: typeof AuthenticatedPlayMultiplayerRoute
+      preLoaderRoute: typeof PlayMultiplayerCodeRouteImport
+      parentRoute: typeof PlayMultiplayerRoute
     }
   }
 }
 
-interface AuthenticatedPlayMultiplayerRouteChildren {
-  AuthenticatedPlayMultiplayerCodeRoute: typeof AuthenticatedPlayMultiplayerCodeRoute
+interface PlayMultiplayerRouteChildren {
+  PlayMultiplayerCodeRoute: typeof PlayMultiplayerCodeRoute
 }
 
-const AuthenticatedPlayMultiplayerRouteChildren: AuthenticatedPlayMultiplayerRouteChildren =
-  {
-    AuthenticatedPlayMultiplayerCodeRoute:
-      AuthenticatedPlayMultiplayerCodeRoute,
-  }
-
-const AuthenticatedPlayMultiplayerRouteWithChildren =
-  AuthenticatedPlayMultiplayerRoute._addFileChildren(
-    AuthenticatedPlayMultiplayerRouteChildren,
-  )
-
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedPlayMultiplayerRoute: typeof AuthenticatedPlayMultiplayerRouteWithChildren
+const PlayMultiplayerRouteChildren: PlayMultiplayerRouteChildren = {
+  PlayMultiplayerCodeRoute: PlayMultiplayerCodeRoute,
 }
 
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedPlayMultiplayerRoute:
-    AuthenticatedPlayMultiplayerRouteWithChildren,
-}
-
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+const PlayMultiplayerRouteWithChildren = PlayMultiplayerRoute._addFileChildren(
+  PlayMultiplayerRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   SettingsRoute: SettingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TutorialRoute: TutorialRoute,
   PlayCampaignRoute: PlayCampaignRoute,
   PlayCasualRoute: PlayCasualRoute,
+  PlayMultiplayerRoute: PlayMultiplayerRouteWithChildren,
   PlayZenRoute: PlayZenRoute,
 }
 export const routeTree = rootRouteImport

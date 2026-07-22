@@ -9,18 +9,18 @@ import { PlayerSeat } from "@/components/poker/PlayerSeat";
 import { PlayingCard } from "@/components/poker/PlayingCard";
 import { ActionPanel } from "@/components/poker/ActionPanel";
 import { ImpactText } from "@/components/comic/ImpactText";
-
 import { ComicButton } from "@/components/comic/ComicButton";
 import { toast } from "sonner";
 import { sfx } from "@/lib/audio/sfx";
+import { getGuestId, getGuestName, getGuestEmoji, setGuestName, setGuestEmoji, EMOJI_CHOICES } from "@/lib/guest";
 
-export const Route = createFileRoute("/_authenticated/play/multiplayer/$code")({
+export const Route = createFileRoute("/play/multiplayer/$code")({
   head: ({ params }) => ({
     meta: [
       { title: `Sala ${params.code} — Incrível Poker` },
-      { name: "description", content: "Sala privada de poker online." },
+      { name: "description", content: "Sala privada de poker online, sem cadastro." },
       { property: "og:title", content: `Sala ${params.code}` },
-      { property: "og:description", content: "Sala privada de poker." },
+      { property: "og:description", content: "Entre na sala com o código." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/play/multiplayer/$code")({
 interface RoomRow {
   id: string;
   code: string;
-  created_by: string;
+  created_by_guest: string | null;
   status: string;
   small_blind: number;
   big_blind: number;
@@ -38,7 +38,8 @@ interface RoomRow {
   max_players: number;
 }
 interface RoomPlayerRow {
-  id: string; room_id: string; user_id: string; seat: number; stack: number; is_ready: boolean;
+  id: string; room_id: string; guest_id: string | null; display_name: string;
+  avatar_emoji: string; seat: number; stack: number; is_ready: boolean;
 }
 
 function Room() {
@@ -46,13 +47,14 @@ function Room() {
   const navigate = useNavigate();
   const [room, setRoom] = useState<RoomRow | null>(null);
   const [players, setPlayers] = useState<RoomPlayerRow[]>([]);
-  const [profiles, setProfiles] = useState<Map<string, { username: string; avatar_emoji: string }>>(new Map());
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [myId, setMyId] = useState<string>("");
+  const [myGuestId, setMyGuestId] = useState<string>("");
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [full, setFull] = useState(false);
-
+  const [needName, setNeedName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [emojiInput, setEmojiInput] = useState("🎭");
 
   const fnGetView = useServerFn(getRoomView);
   const fnSubmit = useServerFn(submitAction);
@@ -62,42 +64,31 @@ function Room() {
   const fnReady = useServerFn(toggleReady);
   const fnJoin = useServerFn(joinRoom);
 
-
-  const fetchState = useCallback(async (roomId: string) => {
+  const fetchState = useCallback(async (roomId: string, guestId: string) => {
     try {
-      const { state } = await fnGetView({ data: { roomId } });
+      const { state } = await fnGetView({ data: { roomId, guestId } });
       if (state) setGameState(state as GameState);
     } catch (e) {
       console.error(e);
     }
   }, [fnGetView]);
 
-  const fetchPlayersAndProfiles = useCallback(async (roomId: string) => {
+  const fetchPlayers = useCallback(async (roomId: string, guestId: string) => {
     const { data: pls } = await supabase.from("room_players")
       .select("*").eq("room_id", roomId).order("seat", { ascending: true });
     if (pls) {
       setPlayers(pls as RoomPlayerRow[]);
-      const ids = pls.map((p) => p.user_id);
-      if (ids.length) {
-        const { data: profs } = await supabase.from("profiles")
-          .select("id, username, avatar_emoji").in("id", ids);
-        const m = new Map((profs ?? []).map((p) => [p.id, { username: p.username, avatar_emoji: p.avatar_emoji }]));
-        setProfiles(m);
-      }
-      const me = pls.find((p) => p.user_id === myId);
+      const me = pls.find((p) => p.guest_id === guestId);
       if (me) setReady(me.is_ready);
     }
-  }, [myId]);
+  }, []);
 
-  // Bootstrap: session + room + subscriptions
+  // Bootstrap
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) { navigate({ to: "/auth" }); return; }
-      const uid = userData.user.id;
-      if (cancelled) return;
-      setMyId(uid);
+      const guestId = getGuestId();
+      setMyGuestId(guestId);
       sfx.unlock();
 
       const { data: r, error } = await supabase.from("rooms")
@@ -106,12 +97,20 @@ function Room() {
       if (cancelled) return;
       setRoom(r as RoomRow);
 
-      // Auto-join se ainda não é membro (fluxo de convite por link)
+      // Já é membro?
       const { data: mine } = await supabase.from("room_players")
-        .select("id").eq("room_id", r.id).eq("user_id", uid).maybeSingle();
+        .select("id").eq("room_id", r.id).eq("guest_id", guestId).maybeSingle();
+
       if (!mine) {
+        // Precisa de apelido pra entrar
+        const savedName = getGuestName();
+        if (!savedName) {
+          setEmojiInput(getGuestEmoji());
+          setNeedName(true);
+          return;
+        }
         try {
-          await fnJoin({ data: { code: r.code } });
+          await fnJoin({ data: { code: r.code, guestId, displayName: savedName, avatarEmoji: getGuestEmoji() } });
         } catch (e) {
           const msg = e instanceof Error ? e.message : "Falhou";
           if (msg.toLowerCase().includes("cheia")) { setFull(true); return; }
@@ -121,25 +120,24 @@ function Room() {
         }
       }
 
-      await fetchPlayersAndProfiles(r.id);
-      await fetchState(r.id);
+      await fetchPlayers(r.id, guestId);
+      await fetchState(r.id, guestId);
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
-
-  // Realtime: room_players + game_actions
+  // Realtime
   useEffect(() => {
-    if (!room) return;
+    if (!room || !myGuestId) return;
     const roomId = room.id;
     const ch = supabase
       .channel(`room:${roomId}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "room_players", filter: `room_id=eq.${roomId}` },
-        () => { void fetchPlayersAndProfiles(roomId); })
+        () => { void fetchPlayers(roomId, myGuestId); })
       .on("postgres_changes", { event: "*", schema: "public", table: "game_actions", filter: `room_id=eq.${roomId}` },
         (payload) => {
-          void fetchState(roomId);
+          void fetchState(roomId, myGuestId);
           const action = (payload.new as { action_type?: string })?.action_type;
           if (action === "hand_start") sfx.play("cardDeal");
           else if (action === "raise") sfx.play("chipDrop");
@@ -152,20 +150,38 @@ function Room() {
         (payload) => setRoom(payload.new as RoomRow))
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [room, fetchPlayersAndProfiles, fetchState]);
+  }, [room, myGuestId, fetchPlayers, fetchState]);
+
+  async function submitNameAndJoin() {
+    const trimmed = nameInput.trim();
+    if (trimmed.length < 2) { toast.error("Apelido muito curto"); return; }
+    if (!room) return;
+    setGuestName(trimmed);
+    setGuestEmoji(emojiInput);
+    try {
+      await fnJoin({ data: { code: room.code, guestId: myGuestId, displayName: trimmed, avatarEmoji: emojiInput } });
+      setNeedName(false);
+      await fetchPlayers(room.id, myGuestId);
+      await fetchState(room.id, myGuestId);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Falhou";
+      if (msg.toLowerCase().includes("cheia")) { setFull(true); return; }
+      toast.error(msg);
+    }
+  }
 
   async function handleReady() {
     if (!room) return;
     const next = !ready;
     setReady(next);
-    try { await fnReady({ data: { roomId: room.id, ready: next } }); }
+    try { await fnReady({ data: { roomId: room.id, guestId: myGuestId, ready: next } }); }
     catch (e) { toast.error(e instanceof Error ? e.message : "Falhou"); setReady(!next); }
   }
 
   async function handleStart() {
     if (!room) return;
     setBusy(true);
-    try { await fnStart({ data: { roomId: room.id } }); }
+    try { await fnStart({ data: { roomId: room.id, guestId: myGuestId } }); }
     catch (e) { toast.error(e instanceof Error ? e.message : "Falhou"); }
     finally { setBusy(false); }
   }
@@ -173,20 +189,20 @@ function Room() {
   async function handleNext() {
     if (!room) return;
     setBusy(true);
-    try { await fnNext({ data: { roomId: room.id } }); }
+    try { await fnNext({ data: { roomId: room.id, guestId: myGuestId } }); }
     catch (e) { toast.error(e instanceof Error ? e.message : "Falhou"); }
     finally { setBusy(false); }
   }
 
   async function handleLeave() {
     if (!room) return;
-    await fnLeave({ data: { roomId: room.id } });
+    await fnLeave({ data: { roomId: room.id, guestId: myGuestId } });
     navigate({ to: "/play/multiplayer" });
   }
 
   async function handleAction(action: SubmitActionInput) {
     if (!room) return;
-    try { await fnSubmit({ data: { roomId: room.id, action } }); }
+    try { await fnSubmit({ data: { roomId: room.id, guestId: myGuestId, action } }); }
     catch (e) { toast.error(e instanceof Error ? e.message : "Ação inválida"); }
   }
 
@@ -200,14 +216,42 @@ function Room() {
     );
   }
 
+  if (needName) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="ink-border-thick hard-shadow bg-card rounded-lg p-6 max-w-md w-full space-y-4">
+          <h2 className="font-display text-2xl text-center">ENTRAR NA SALA {code}</h2>
+          <div className="flex gap-2 items-center">
+            <div className="ink-border bg-white px-3 py-2 text-3xl">{emojiInput}</div>
+            <input
+              autoFocus
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="Seu apelido"
+              maxLength={20}
+              className="ink-border-thick bg-white px-3 py-2 font-display text-xl flex-1"
+            />
+          </div>
+          <div className="flex flex-wrap gap-1.5 justify-center">
+            {EMOJI_CHOICES.map((e) => (
+              <button key={e} type="button" onClick={() => setEmojiInput(e)}
+                className={`ink-border w-10 h-10 text-2xl grid place-items-center rounded ${emojiInput === e ? "bg-pow-yellow" : "bg-white hover:bg-muted"}`}
+              >{e}</button>
+            ))}
+          </div>
+          <ComicButton variant="primary" onClick={submitNameAndJoin}>ENTRAR</ComicButton>
+        </div>
+      </div>
+    );
+  }
+
   if (!room) return <div className="min-h-screen flex items-center justify-center font-display text-2xl">carregando sala...</div>;
 
-
-  const isCreator = room.created_by === myId;
+  const isCreator = room.created_by_guest === myGuestId;
   const readyCount = players.filter((p) => p.is_ready).length;
   const canStart = isCreator && players.length >= 2 && readyCount === players.length;
 
-  // Lobby view (sem jogo iniciado)
+  // Lobby view
   if (!gameState) {
     return (
       <div className="min-h-screen bg-background">
@@ -229,21 +273,19 @@ function Room() {
             </div>
 
             <ul className="space-y-2">
-              {players.map((p) => {
-                const prof = profiles.get(p.user_id);
-                return (
-                  <li key={p.id} className="ink-border bg-white p-2 rounded flex items-center gap-3">
-                    <span className="text-2xl">{prof?.avatar_emoji ?? "🎭"}</span>
-                    <span className="font-display flex-1 truncate">{prof?.username ?? "..."}</span>
-                    {p.user_id === room.created_by && <span className="text-xs ink-border bg-pow-yellow px-2 py-0.5 font-display">HOST</span>}
-                    <span className={`text-xs font-display px-2 py-0.5 ink-border ${p.is_ready ? "bg-pow-yellow" : "bg-muted"}`}>
-                      {p.is_ready ? "PRONTO" : "aguardando"}
-                    </span>
-                  </li>
-                );
-              })}
+              {players.map((p) => (
+                <li key={p.id} className="ink-border bg-white p-2 rounded flex items-center gap-3">
+                  <span className="text-2xl">{p.avatar_emoji}</span>
+                  <span className="font-display flex-1 truncate">{p.display_name}</span>
+                  {p.guest_id === room.created_by_guest && <span className="text-xs ink-border bg-pow-yellow px-2 py-0.5 font-display">HOST</span>}
+                  <span className={`text-xs font-display px-2 py-0.5 ink-border ${p.is_ready ? "bg-pow-yellow" : "bg-muted"}`}>
+                    {p.is_ready ? "PRONTO" : "aguardando"}
+                  </span>
+                </li>
+              ))}
             </ul>
           </div>
+
           <div className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
             <div className="text-center">
               <div className="halftone-yellow ink-border-thick hard-shadow-sm p-4 inline-block mb-3">
@@ -264,9 +306,9 @@ function Room() {
                   className="ink-border bg-white px-3 py-1 font-display text-sm hover:bg-pow-yellow"
                 >🔗 LINK</button>
               </div>
-
             </div>
           </div>
+
           <div className="flex gap-3 justify-center">
             <ComicButton variant={ready ? "secondary" : "primary"} onClick={handleReady}>
               {ready ? "DESMARCAR" : "PRONTO!"}
@@ -289,9 +331,9 @@ function Room() {
 
   // Game view
   const v = getVariant(gameState.variant);
-  const me = gameState.players.find((p) => p.id === myId);
-  const others = gameState.players.filter((p) => p.id !== myId);
-  const meIdx = gameState.players.findIndex((p) => p.id === myId);
+  const me = gameState.players.find((p) => p.id === myGuestId);
+  const others = gameState.players.filter((p) => p.id !== myGuestId);
+  const meIdx = gameState.players.findIndex((p) => p.id === myGuestId);
   const isMyTurn = meIdx === gameState.actionIdx && !gameState.awaitingAdvance && me && !me.folded && !me.allIn;
   const winnerIds = new Set(gameState.winners.map((w) => w.playerId));
 
@@ -382,4 +424,3 @@ function Room() {
     </div>
   );
 }
-
