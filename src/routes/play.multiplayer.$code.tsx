@@ -338,7 +338,7 @@ function Room() {
   const winnerIds = new Set(gameState.winners.map((w) => w.playerId));
 
   return (
-    <div className="relative h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col">
+    <div className="relative min-h-[100dvh] overflow-y-auto flex flex-col">
       <ImpactText text={gameState.lastImpact?.text} ts={gameState.lastImpact?.ts} />
       <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 ink-border-thick bg-card">
         <div className="flex min-w-0 items-center gap-2">
@@ -349,7 +349,7 @@ function Room() {
         <div className="font-body text-xs md:text-sm font-bold">Mão #{gameState.handNumber}</div>
       </header>
 
-      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 overflow-hidden"
+      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2"
            style={{ background: "radial-gradient(ellipse at center, var(--color-felt) 0%, var(--color-felt-dark) 100%)" }}>
 
         <div className="flex flex-wrap gap-1.5 md:gap-3 justify-center pt-1">
@@ -375,17 +375,19 @@ function Room() {
               POT: {gameState.pot.toLocaleString("pt-BR")}
             </div>
           </div>
-          <div className="flex gap-1 md:gap-2 items-center justify-center flex-wrap max-w-full">
-            {[0, 1, 2, 3, 4].map((i) => {
-              const c = gameState.community[i];
-              if (!c) return <div key={i} className="w-12 h-16 sm:w-16 sm:h-24 md:w-20 md:h-28 lg:w-24 lg:h-36 rounded-md border-2 border-dashed border-white/30" />;
-              return <div key={i} className="short:[&>*]:!w-16 short:[&>*]:!h-24"><PlayingCard card={c} size="lg" dealDelay={i * 60} /></div>;
-            })}
+          <div className="w-full overflow-x-auto">
+            <div className="flex gap-1 md:gap-2 items-center justify-center flex-nowrap min-w-max mx-auto px-1">
+              {[0, 1, 2, 3, 4].map((i) => {
+                const c = gameState.community[i];
+                if (!c) return <div key={i} className="shrink-0 w-10 h-14 sm:w-14 sm:h-20 md:w-16 md:h-24 lg:w-20 lg:h-28 rounded-md border-2 border-dashed border-white/30" />;
+                return <PlayingCard key={i} card={c} size="md" dealDelay={i * 60} />;
+              })}
+            </div>
           </div>
         </div>
 
         {me && (
-          <div className="pb-1">
+          <div className="pb-1 min-h-[140px] md:min-h-[170px] flex items-end">
             <PlayerSeat
               player={me}
               isActive={meIdx === gameState.actionIdx && !gameState.awaitingAdvance}
@@ -398,6 +400,7 @@ function Room() {
           </div>
         )}
       </div>
+
 
       <div className="shrink-0 relative z-10 bg-background p-2 md:p-3 short:py-1.5">
         {gameState.awaitingAdvance ? (
