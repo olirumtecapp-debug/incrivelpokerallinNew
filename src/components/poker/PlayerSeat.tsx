@@ -1,6 +1,7 @@
 import type { Player } from "@/lib/poker/engine";
 import { PlayingCard } from "./PlayingCard";
 import { SpeechBubble } from "@/components/comic/SpeechBubble";
+import { AvatarBadge } from "@/components/multiplayer/AvatarPicker";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -12,9 +13,11 @@ interface Props {
   isWinner?: boolean;
   holeCount?: number;
   isMe?: boolean;
+  /** Se preenchido, exibe avatar HQ (multiplayer). Bots single-player continuam com emoji do personality. */
+  avatarId?: string | null;
 }
 
-export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner, holeCount = 2, isMe = false }: Props) {
+export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner, holeCount = 2, isMe = false, avatarId }: Props) {
   const showCards = !player.folded && (reveal || !player.isBot);
   const slots = holeCount === 4 ? [0, 1, 2, 3] : [0, 1];
   const size = isMe ? "md" : "sm";
@@ -41,15 +44,17 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
         })}
       </div>
 
-
-
       <div className={cn(
         "ink-border-thick hard-shadow-sm bg-card px-2 py-1 md:px-3 md:py-1.5 min-w-[110px] md:min-w-[140px] text-center rounded-md",
         isActive && "bg-pow-yellow scale-105 transition-transform",
         isWinner && "bg-pow-yellow",
       )}>
         <div className="flex items-center justify-center gap-1.5">
-          {player.personality?.emoji && <span className="text-base md:text-lg">{player.personality.emoji}</span>}
+          {avatarId ? (
+            <AvatarBadge avatarId={avatarId} size={isMe ? 32 : 24} />
+          ) : (
+            player.personality?.emoji && <span className="text-base md:text-lg">{player.personality.emoji}</span>
+          )}
           <div className="font-display text-sm md:text-base truncate">{player.name}</div>
           {isDealer && (
             <span className="ink-border bg-white text-ink text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">D</span>

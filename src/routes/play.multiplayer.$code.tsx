@@ -12,7 +12,9 @@ import { ImpactText } from "@/components/comic/ImpactText";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { toast } from "sonner";
 import { sfx } from "@/lib/audio/sfx";
-import { getGuestId, getGuestName, getGuestEmoji, setGuestName, setGuestEmoji, EMOJI_CHOICES } from "@/lib/guest";
+import { getGuestId, getGuestName, getGuestAvatarId, setGuestName, setGuestAvatarId } from "@/lib/guest";
+import { AvatarPicker, AvatarBadge } from "@/components/multiplayer/AvatarPicker";
+import { DEFAULT_AVATAR_ID, type AvatarId } from "@/lib/avatars";
 
 export const Route = createFileRoute("/play/multiplayer/$code")({
   head: ({ params }) => ({
@@ -54,7 +56,7 @@ function Room() {
   const [full, setFull] = useState(false);
   const [needName, setNeedName] = useState(false);
   const [nameInput, setNameInput] = useState("");
-  const [emojiInput, setEmojiInput] = useState("🎭");
+  const [avatarInput, setAvatarInput] = useState<AvatarId>(DEFAULT_AVATAR_ID);
 
   const fnGetView = useServerFn(getRoomView);
   const fnSubmit = useServerFn(submitAction);
@@ -105,12 +107,12 @@ function Room() {
         // Precisa de apelido pra entrar
         const savedName = getGuestName();
         if (!savedName) {
-          setEmojiInput(getGuestEmoji());
+          setAvatarInput(getGuestAvatarId());
           setNeedName(true);
           return;
         }
         try {
-          await fnJoin({ data: { code: r.code, guestId, displayName: savedName, avatarEmoji: getGuestEmoji() } });
+          await fnJoin({ data: { code: r.code, guestId, displayName: savedName, avatarEmoji: getGuestAvatarId() } });
         } catch (e) {
           const msg = e instanceof Error ? e.message : "Falhou";
           if (msg.toLowerCase().includes("cheia")) { setFull(true); return; }
@@ -157,9 +159,9 @@ function Room() {
     if (trimmed.length < 2) { toast.error("Apelido muito curto"); return; }
     if (!room) return;
     setGuestName(trimmed);
-    setGuestEmoji(emojiInput);
+    setGuestAvatarId(avatarInput);
     try {
-      await fnJoin({ data: { code: room.code, guestId: myGuestId, displayName: trimmed, avatarEmoji: emojiInput } });
+      await fnJoin({ data: { code: room.code, guestId: myGuestId, displayName: trimmed, avatarEmoji: avatarInput } });
       setNeedName(false);
       await fetchPlayers(room.id, myGuestId);
       await fetchState(room.id, myGuestId);
@@ -221,8 +223,8 @@ function Room() {
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="ink-border-thick hard-shadow bg-card rounded-lg p-6 max-w-md w-full space-y-4">
           <h2 className="font-display text-2xl text-center">ENTRAR NA SALA {code}</h2>
-          <div className="flex gap-2 items-center">
-            <div className="ink-border bg-white px-3 py-2 text-3xl">{emojiInput}</div>
+          <div className="flex gap-3 items-center">
+            <AvatarBadge avatarId={avatarInput} size={56} />
             <input
               autoFocus
               value={nameInput}
@@ -232,13 +234,8 @@ function Room() {
               className="ink-border-thick bg-white px-3 py-2 font-display text-xl flex-1"
             />
           </div>
-          <div className="flex flex-wrap gap-1.5 justify-center">
-            {EMOJI_CHOICES.map((e) => (
-              <button key={e} type="button" onClick={() => setEmojiInput(e)}
-                className={`ink-border w-10 h-10 text-2xl grid place-items-center rounded ${emojiInput === e ? "bg-pow-yellow" : "bg-white hover:bg-muted"}`}
-              >{e}</button>
-            ))}
-          </div>
+          <div className="text-xs font-bold uppercase tracking-wide">Escolha seu personagem</div>
+          <AvatarPicker value={avatarInput} onChange={setAvatarInput} />
           <ComicButton variant="primary" onClick={submitNameAndJoin}>ENTRAR</ComicButton>
         </div>
       </div>
@@ -275,7 +272,7 @@ function Room() {
             <ul className="space-y-2">
               {players.map((p) => (
                 <li key={p.id} className="ink-border bg-white p-2 rounded flex items-center gap-3">
-                  <span className="text-2xl">{p.avatar_emoji}</span>
+                  <AvatarBadge avatarId={p.avatar_emoji} size={40} />
                   <span className="font-display flex-1 truncate">{p.display_name}</span>
                   {p.guest_id === room.created_by_guest && <span className="text-xs ink-border bg-pow-yellow px-2 py-0.5 font-display">HOST</span>}
                   <span className={`text-xs font-display px-2 py-0.5 ink-border ${p.is_ready ? "bg-pow-yellow" : "bg-muted"}`}>
@@ -355,6 +352,7 @@ function Room() {
         <div className="flex flex-wrap gap-1.5 md:gap-3 justify-center pt-1">
           {others.map((p) => {
             const idx = gameState.players.findIndex((x) => x.id === p.id);
+            const pr = players.find((rp) => rp.guest_id === p.id);
             return (
               <PlayerSeat
                 key={p.id}
@@ -364,6 +362,7 @@ function Room() {
                 reveal={gameState.street === "showdown"}
                 isWinner={winnerIds.has(p.id)}
                 holeCount={v.holeCards}
+                avatarId={pr?.avatar_emoji}
               />
             );
           })}
@@ -396,6 +395,7 @@ function Room() {
               isWinner={winnerIds.has(me.id)}
               holeCount={v.holeCards}
               isMe
+              avatarId={players.find((rp) => rp.guest_id === myGuestId)?.avatar_emoji}
             />
           </div>
         )}
