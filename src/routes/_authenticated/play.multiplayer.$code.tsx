@@ -1,0 +1,335 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { getRoomView, submitAction, startRoomHand, nextRoomHand, leaveRoom, toggleReady } from "@/lib/rooms.functions";
+import type { GameState } from "@/lib/poker/engine";
+import { getVariant } from "@/lib/poker/variants";
+import { PlayerSeat } from "@/components/poker/PlayerSeat";
+import { PlayingCard } from "@/components/poker/PlayingCard";
+import { ActionPanel } from "@/components/poker/ActionPanel";
+import { ImpactText } from "@/components/comic/ImpactText";
+import { ComicButton } from "@/components/comic/ComicButton";
+import { toast } from "sonner";
+import { sfx } from "@/lib/audio/sfx";
+
+export const Route = createFileRoute("/_authenticated/play/multiplayer/$code")({
+  head: ({ params }) => ({
+    meta: [
+      { title: `Sala ${params.code} — Incrível Poker` },
+      { name: "description", content: "Sala privada de poker online." },
+      { property: "og:title", content: `Sala ${params.code}` },
+      { property: "og:description", content: "Sala privada de poker." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: Room,
+});
+
+interface RoomRow {
+  id: string;
+  code: string;
+  created_by: string;
+  status: string;
+  small_blind: number;
+  big_blind: number;
+  variant: string;
+  max_players: number;
+}
+interface RoomPlayerRow {
+  id: string; room_id: string; user_id: string; seat: number; stack: number; is_ready: boolean;
+}
+
+function Room() {
+  const { code } = Route.useParams();
+  const navigate = useNavigate();
+  const [room, setRoom] = useState<RoomRow | null>(null);
+  const [players, setPlayers] = useState<RoomPlayerRow[]>([]);
+  const [profiles, setProfiles] = useState<Map<string, { username: string; avatar_emoji: string }>>(new Map());
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [myId, setMyId] = useState<string>("");
+  const [ready, setReady] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const fnGetView = useServerFn(getRoomView);
+  const fnSubmit = useServerFn(submitAction);
+  const fnStart = useServerFn(startRoomHand);
+  const fnNext = useServerFn(nextRoomHand);
+  const fnLeave = useServerFn(leaveRoom);
+  const fnReady = useServerFn(toggleReady);
+
+  const fetchState = useCallback(async (roomId: string) => {
+    try {
+      const { state } = await fnGetView({ data: { roomId } });
+      if (state) setGameState(state as GameState);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [fnGetView]);
+
+  const fetchPlayersAndProfiles = useCallback(async (roomId: string) => {
+    const { data: pls } = await supabase.from("room_players")
+      .select("*").eq("room_id", roomId).order("seat", { ascending: true });
+    if (pls) {
+      setPlayers(pls as RoomPlayerRow[]);
+      const ids = pls.map((p) => p.user_id);
+      if (ids.length) {
+        const { data: profs } = await supabase.from("profiles")
+          .select("id, username, avatar_emoji").in("id", ids);
+        const m = new Map((profs ?? []).map((p) => [p.id, { username: p.username, avatar_emoji: p.avatar_emoji }]));
+        setProfiles(m);
+      }
+      const me = pls.find((p) => p.user_id === myId);
+      if (me) setReady(me.is_ready);
+    }
+  }, [myId]);
+
+  // Bootstrap: session + room + subscriptions
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) { navigate({ to: "/auth" }); return; }
+      const uid = userData.user.id;
+      if (cancelled) return;
+      setMyId(uid);
+      sfx.unlock();
+
+      const { data: r, error } = await supabase.from("rooms")
+        .select("*").eq("code", code).maybeSingle();
+      if (error || !r) { toast.error("Sala não encontrada"); navigate({ to: "/play/multiplayer" }); return; }
+      if (cancelled) return;
+      setRoom(r as RoomRow);
+      await fetchPlayersAndProfiles(r.id);
+      await fetchState(r.id);
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code]);
+
+  // Realtime: room_players + game_actions
+  useEffect(() => {
+    if (!room) return;
+    const roomId = room.id;
+    const ch = supabase
+      .channel(`room:${roomId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "room_players", filter: `room_id=eq.${roomId}` },
+        () => { void fetchPlayersAndProfiles(roomId); })
+      .on("postgres_changes", { event: "*", schema: "public", table: "game_actions", filter: `room_id=eq.${roomId}` },
+        (payload) => {
+          void fetchState(roomId);
+          const action = (payload.new as { action_type?: string })?.action_type;
+          if (action === "hand_start") sfx.play("cardDeal");
+          else if (action === "raise") sfx.play("chipDrop");
+          else if (action === "call") sfx.play("chipDrop");
+          else if (action === "fold") sfx.play("fold");
+          else if (action === "allin") sfx.play("allInWhoosh");
+          else if (action === "check") sfx.play("click");
+        })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${roomId}` },
+        (payload) => setRoom(payload.new as RoomRow))
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [room, fetchPlayersAndProfiles, fetchState]);
+
+  async function handleReady() {
+    if (!room) return;
+    const next = !ready;
+    setReady(next);
+    try { await fnReady({ data: { roomId: room.id, ready: next } }); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Falhou"); setReady(!next); }
+  }
+
+  async function handleStart() {
+    if (!room) return;
+    setBusy(true);
+    try { await fnStart({ data: { roomId: room.id } }); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Falhou"); }
+    finally { setBusy(false); }
+  }
+
+  async function handleNext() {
+    if (!room) return;
+    setBusy(true);
+    try { await fnNext({ data: { roomId: room.id } }); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Falhou"); }
+    finally { setBusy(false); }
+  }
+
+  async function handleLeave() {
+    if (!room) return;
+    await fnLeave({ data: { roomId: room.id } });
+    navigate({ to: "/play/multiplayer" });
+  }
+
+  async function handleAction(action: Parameters<typeof fnSubmit>[0]["data"]["action"]) {
+    if (!room) return;
+    try { await fnSubmit({ data: { roomId: room.id, action } }); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Ação inválida"); }
+  }
+
+  if (!room) return <div className="min-h-screen flex items-center justify-center font-display text-2xl">carregando sala...</div>;
+
+  const isCreator = room.created_by === myId;
+  const readyCount = players.filter((p) => p.is_ready).length;
+  const canStart = isCreator && players.length >= 2 && readyCount === players.length;
+
+  // Lobby view (sem jogo iniciado)
+  if (!gameState) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="ink-border-thick bg-felt text-white p-4 flex items-center gap-3">
+          <Link to="/play/multiplayer" className="font-display text-xl text-white shrink-0">← LOBBY</Link>
+          <h1 className="font-display text-2xl md:text-3xl truncate flex-1">SALA {room.code}</h1>
+          <button onClick={handleLeave} className="ink-border bg-pow-red text-white px-3 py-1 text-sm font-display">SAIR</button>
+        </header>
+        <main className="max-w-3xl mx-auto p-4 md:p-6 space-y-4">
+          <div className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
+            <div className="flex justify-between mb-3">
+              <h2 className="font-display text-xl">JOGADORES ({players.length}/{room.max_players})</h2>
+              <div className="text-sm font-bold">{getVariant(room.variant as never).name} · SB {room.small_blind} / BB {room.big_blind}</div>
+            </div>
+            <ul className="space-y-2">
+              {players.map((p) => {
+                const prof = profiles.get(p.user_id);
+                return (
+                  <li key={p.id} className="ink-border bg-white p-2 rounded flex items-center gap-3">
+                    <span className="text-2xl">{prof?.avatar_emoji ?? "🎭"}</span>
+                    <span className="font-display flex-1 truncate">{prof?.username ?? "..."}</span>
+                    {p.user_id === room.created_by && <span className="text-xs ink-border bg-pow-yellow px-2 py-0.5 font-display">HOST</span>}
+                    <span className={`text-xs font-display px-2 py-0.5 ink-border ${p.is_ready ? "bg-pow-yellow" : "bg-muted"}`}>
+                      {p.is_ready ? "PRONTO" : "aguardando"}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <div className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
+            <div className="text-center">
+              <div className="halftone-yellow ink-border-thick hard-shadow-sm p-4 inline-block mb-3">
+                <div className="text-sm font-bold">CÓDIGO</div>
+                <div className="font-display text-4xl tracking-widest">{room.code}</div>
+              </div>
+              <div>
+                <button
+                  onClick={() => { navigator.clipboard?.writeText(room.code); toast.success("Código copiado!"); }}
+                  className="ink-border bg-white px-3 py-1 font-display text-sm hover:bg-pow-yellow"
+                >📋 COPIAR</button>
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-3 justify-center">
+            <ComicButton variant={ready ? "secondary" : "primary"} onClick={handleReady}>
+              {ready ? "DESMARCAR" : "PRONTO!"}
+            </ComicButton>
+            {isCreator && (
+              <ComicButton variant="allin" onClick={handleStart} disabled={!canStart || busy}>
+                INICIAR PARTIDA
+              </ComicButton>
+            )}
+          </div>
+          {isCreator && !canStart && (
+            <p className="text-center text-sm text-muted-foreground">
+              Aguardando todos ficarem prontos (mínimo 2 jogadores).
+            </p>
+          )}
+        </main>
+      </div>
+    );
+  }
+
+  // Game view
+  const v = getVariant(gameState.variant);
+  const me = gameState.players.find((p) => p.id === myId);
+  const others = gameState.players.filter((p) => p.id !== myId);
+  const meIdx = gameState.players.findIndex((p) => p.id === myId);
+  const isMyTurn = meIdx === gameState.actionIdx && !gameState.awaitingAdvance && me && !me.folded && !me.allIn;
+  const winnerIds = new Set(gameState.winners.map((w) => w.playerId));
+
+  return (
+    <div className="relative min-h-screen flex flex-col">
+      <ImpactText text={gameState.lastImpact?.text} ts={gameState.lastImpact?.ts} />
+      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 ink-border-thick bg-card">
+        <div className="flex min-w-0 items-center gap-3">
+          <Link to="/play/multiplayer" className="font-display text-xl text-pow-red hover:text-ink shrink-0">← LOBBY</Link>
+          <span className="truncate font-display text-lg">SALA {room.code}</span>
+          <span className="ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
+        </div>
+        <div className="font-body text-sm font-bold">Mão #{gameState.handNumber}</div>
+      </header>
+
+      <div className="flex-1 flex flex-col items-center justify-between p-4 relative"
+           style={{ background: "radial-gradient(ellipse at center, var(--color-felt) 0%, var(--color-felt-dark) 100%)" }}>
+
+        <div className="flex flex-wrap gap-3 justify-center mt-2">
+          {others.map((p) => {
+            const idx = gameState.players.findIndex((x) => x.id === p.id);
+            return (
+              <PlayerSeat
+                key={p.id}
+                player={p}
+                isActive={gameState.actionIdx === idx && !gameState.awaitingAdvance}
+                isDealer={gameState.dealerIdx === idx}
+                reveal={gameState.street === "showdown"}
+                isWinner={winnerIds.has(p.id)}
+                holeCount={v.holeCards}
+              />
+            );
+          })}
+        </div>
+
+        <div className="flex flex-col items-center gap-3 my-4">
+          <div className="ink-border-thick hard-shadow bg-paper/90 rounded-full px-6 py-2">
+            <div className="font-display text-2xl md:text-3xl text-pow-red text-center">
+              POT: {gameState.pot.toLocaleString("pt-BR")}
+            </div>
+          </div>
+          <div className="flex gap-2 min-h-[112px] items-center">
+            {[0, 1, 2, 3, 4].map((i) => {
+              const c = gameState.community[i];
+              if (!c) return <div key={i} className="w-14 h-20 md:w-20 md:h-28 rounded-md border-2 border-dashed border-white/30" />;
+              return <PlayingCard key={i} card={c} size="lg" dealDelay={i * 60} />;
+            })}
+          </div>
+        </div>
+
+        {me && (
+          <div className="mb-2">
+            <PlayerSeat
+              player={me}
+              isActive={meIdx === gameState.actionIdx && !gameState.awaitingAdvance}
+              isDealer={gameState.dealerIdx === meIdx}
+              reveal={gameState.street === "showdown"}
+              isWinner={winnerIds.has(me.id)}
+              holeCount={v.holeCards}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="p-3 md:p-4">
+        {gameState.awaitingAdvance ? (
+          <div className="ink-border-thick hard-shadow bg-card rounded-lg p-4 flex flex-col items-center gap-2">
+            {gameState.winners.map((w, i) => {
+              const p = gameState.players.find((pl) => pl.id === w.playerId)!;
+              return (
+                <div key={i} className="font-display text-xl">
+                  {p.name} ganhou <span className="text-pow-red">{w.amount}</span>
+                  {w.handName && <span className="text-muted-foreground text-base"> — {w.handName}</span>}
+                </div>
+              );
+            })}
+            {isCreator ? (
+              <ComicButton variant="primary" onClick={handleNext} disabled={busy}>PRÓXIMA MÃO</ComicButton>
+            ) : (
+              <div className="text-sm text-muted-foreground">Aguardando o host iniciar a próxima mão...</div>
+            )}
+          </div>
+        ) : me ? (
+          <ActionPanel state={gameState} onAction={handleAction} disabled={!isMyTurn} />
+        ) : null}
+      </div>
+    </div>
+  );
+}

@@ -14,7 +14,6 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlayZenRouteImport } from './routes/play.zen'
-import { Route as PlayMultiplayerRouteImport } from './routes/play.multiplayer'
 import { Route as PlayCasualRouteImport } from './routes/play.casual'
 import { Route as PlayCampaignRouteImport } from './routes/play.campaign'
 
@@ -43,11 +42,6 @@ const PlayZenRoute = PlayZenRouteImport.update({
   path: '/play/zen',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlayMultiplayerRoute = PlayMultiplayerRouteImport.update({
-  id: '/play/multiplayer',
-  path: '/play/multiplayer',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PlayCasualRoute = PlayCasualRouteImport.update({
   id: '/play/casual',
   path: '/play/casual',
@@ -66,7 +60,6 @@ export interface FileRoutesByFullPath {
   '/tutorial': typeof TutorialRoute
   '/play/campaign': typeof PlayCampaignRoute
   '/play/casual': typeof PlayCasualRoute
-  '/play/multiplayer': typeof PlayMultiplayerRoute
   '/play/zen': typeof PlayZenRoute
 }
 export interface FileRoutesByTo {
@@ -76,7 +69,6 @@ export interface FileRoutesByTo {
   '/tutorial': typeof TutorialRoute
   '/play/campaign': typeof PlayCampaignRoute
   '/play/casual': typeof PlayCasualRoute
-  '/play/multiplayer': typeof PlayMultiplayerRoute
   '/play/zen': typeof PlayZenRoute
 }
 export interface FileRoutesById {
@@ -87,7 +79,6 @@ export interface FileRoutesById {
   '/tutorial': typeof TutorialRoute
   '/play/campaign': typeof PlayCampaignRoute
   '/play/casual': typeof PlayCasualRoute
-  '/play/multiplayer': typeof PlayMultiplayerRoute
   '/play/zen': typeof PlayZenRoute
 }
 export interface FileRouteTypes {
@@ -99,7 +90,6 @@ export interface FileRouteTypes {
     | '/tutorial'
     | '/play/campaign'
     | '/play/casual'
-    | '/play/multiplayer'
     | '/play/zen'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -109,7 +99,6 @@ export interface FileRouteTypes {
     | '/tutorial'
     | '/play/campaign'
     | '/play/casual'
-    | '/play/multiplayer'
     | '/play/zen'
   id:
     | '__root__'
@@ -119,7 +108,6 @@ export interface FileRouteTypes {
     | '/tutorial'
     | '/play/campaign'
     | '/play/casual'
-    | '/play/multiplayer'
     | '/play/zen'
   fileRoutesById: FileRoutesById
 }
@@ -130,7 +118,6 @@ export interface RootRouteChildren {
   TutorialRoute: typeof TutorialRoute
   PlayCampaignRoute: typeof PlayCampaignRoute
   PlayCasualRoute: typeof PlayCasualRoute
-  PlayMultiplayerRoute: typeof PlayMultiplayerRoute
   PlayZenRoute: typeof PlayZenRoute
 }
 
@@ -171,13 +158,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayZenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/play/multiplayer': {
-      id: '/play/multiplayer'
-      path: '/play/multiplayer'
-      fullPath: '/play/multiplayer'
-      preLoaderRoute: typeof PlayMultiplayerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/play/casual': {
       id: '/play/casual'
       path: '/play/casual'
@@ -202,7 +182,6 @@ const rootRouteChildren: RootRouteChildren = {
   TutorialRoute: TutorialRoute,
   PlayCampaignRoute: PlayCampaignRoute,
   PlayCasualRoute: PlayCasualRoute,
-  PlayMultiplayerRoute: PlayMultiplayerRoute,
   PlayZenRoute: PlayZenRoute,
 }
 export const routeTree = rootRouteImport
