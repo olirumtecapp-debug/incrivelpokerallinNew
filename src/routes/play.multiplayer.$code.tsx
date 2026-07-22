@@ -244,7 +244,11 @@ function Room() {
 
   if (!room) return <div className="min-h-screen flex items-center justify-center font-display text-2xl">carregando sala...</div>;
 
-  const isCreator = room.created_by_guest === myGuestId;
+  // Host = primeiro jogador a entrar (o criador da sala)
+  const hostGuestId = players.length > 0
+    ? [...players].sort((a, b) => (a.joined_at ?? "").localeCompare(b.joined_at ?? ""))[0].guest_id
+    : null;
+  const isCreator = hostGuestId !== null && hostGuestId === myGuestId;
   const readyCount = players.filter((p) => p.is_ready).length;
   const canStart = isCreator && players.length >= 2 && readyCount === players.length;
 
