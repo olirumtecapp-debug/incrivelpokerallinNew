@@ -1,6 +1,8 @@
 import type { Card } from "./cards";
-import { evaluateBest, HandRank } from "./evaluator";
+import { evaluateHand } from "./evaluator";
 import { newDeck } from "./cards";
+import type { VariantId } from "./variants";
+import { getVariant } from "./variants";
 
 export type Difficulty = "beginner" | "easy" | "medium" | "hard";
 
@@ -9,7 +11,7 @@ export interface AiPersonality {
   name: string;
   title: string;
   difficulty: Difficulty;
-  avatarBg: string; // tailwind class
+  avatarBg: string;
   emoji: string;
   taunts: {
     win: string[];
@@ -71,14 +73,18 @@ export function personalityForDifficulty(d: Difficulty): AiPersonality {
   return PERSONALITIES.find((p) => p.difficulty === d) ?? PERSONALITIES[0];
 }
 
-/** Monte Carlo simplificado: estima equity vs 1 oponente aleatório. */
-export function estimateEquity(hole: Card[], community: Card[], iterations = 200): number {
+/** Monte Carlo com suporte a variantes. */
+export function estimateEquity(
+  hole: Card[], community: Card[],
+  variantId: VariantId = "holdem",
+  iterations = 200,
+): number {
+  const v = getVariant(variantId);
   const known = new Set([...hole, ...community].map((c) => `${c.rank}${c.suit}`));
-  const remaining = newDeck().filter((c) => !known.has(`${c.rank}${c.suit}`));
+  const remaining = newDeck(variantId).filter((c) => !known.has(`${c.rank}${c.suit}`));
   let wins = 0; let ties = 0;
   for (let i = 0; i < iterations; i++) {
     const deck = [...remaining];
-    // sample sem repetição
     const pick = (n: number) => {
       const out: Card[] = [];
       for (let k = 0; k < n; k++) {
@@ -88,11 +94,11 @@ export function estimateEquity(hole: Card[], community: Card[], iterations = 200
       }
       return out;
     };
-    const oppHole = pick(2);
+    const oppHole = pick(v.holeCards);
     const need = 5 - community.length;
     const board = [...community, ...pick(need)];
-    const my = evaluateBest([...hole, ...board]).score;
-    const op = evaluateBest([...oppHole, ...board]).score;
+    const my = evaluateHand(hole, board, variantId).score;
+    const op = evaluateHand(oppHole, board, variantId).score;
     if (my > op) wins++;
     else if (my === op) ties++;
   }
@@ -103,32 +109,32 @@ export interface AiContext {
   hole: Card[];
   community: Card[];
   stack: number;
-  currentBet: number;      // maior bet da rodada
-  myCurrentBet: number;    // meu commit na rodada
+  currentBet: number;
+  myCurrentBet: number;
   pot: number;
   minRaise: number;
   bigBlind: number;
   canCheck: boolean;
   difficulty: Difficulty;
+  variant: VariantId;
 }
 
 export type AiAction =
   | { type: "fold" }
   | { type: "check" }
   | { type: "call" }
-  | { type: "raise"; amount: number } // amount = NOVO total de bet na rodada
+  | { type: "raise"; amount: number }
   | { type: "allin" };
 
-/** Escolhe ação para IA. */
 export function decideAction(ctx: AiContext): AiAction {
   const toCall = Math.max(0, ctx.currentBet - ctx.myCurrentBet);
   const potOdds = toCall > 0 ? toCall / (ctx.pot + toCall) : 0;
 
-  // Iterations por dificuldade
-  const iters = ctx.difficulty === "hard" ? 400 : ctx.difficulty === "medium" ? 220 : 100;
-  const equity = estimateEquity(ctx.hole, ctx.community, iters);
+  // Omaha aumenta o custo do MC (60 combos por eval); reduz iterações.
+  const baseIters = ctx.difficulty === "hard" ? 400 : ctx.difficulty === "medium" ? 220 : 100;
+  const iters = ctx.variant === "omaha" ? Math.max(50, Math.floor(baseIters / 3)) : baseIters;
+  const equity = estimateEquity(ctx.hole, ctx.community, ctx.variant, iters);
 
-  // Aggression + bluff freq por dificuldade
   const cfg = {
     beginner: { aggression: 0.15, bluff: 0.05, foldThreshold: 0.15 },
     easy:     { aggression: 0.3,  bluff: 0.08, foldThreshold: 0.25 },
@@ -138,7 +144,6 @@ export function decideAction(ctx: AiContext): AiAction {
 
   const wantRaise = equity > 0.65 || (Math.random() < cfg.bluff && ctx.community.length >= 3);
 
-  // Se pode dar check
   if (ctx.canCheck && toCall === 0) {
     if (wantRaise && equity > 0.5) {
       const raiseSize = Math.min(ctx.stack + ctx.myCurrentBet,
@@ -149,13 +154,11 @@ export function decideAction(ctx: AiContext): AiAction {
     return { type: "check" };
   }
 
-  // Precisa pagar
   if (equity < cfg.foldThreshold && Math.random() > cfg.bluff * 0.3) {
     if (toCall > ctx.stack * 0.5) return { type: "fold" };
     if (Math.random() > equity + 0.1) return { type: "fold" };
   }
 
-  // Equity boa OR bluff → raise
   if ((equity > 0.6 && equity > potOdds + 0.1) || (wantRaise && Math.random() < cfg.aggression)) {
     const raiseTotal = ctx.myCurrentBet + toCall +
       Math.max(ctx.minRaise, Math.floor(ctx.pot * cfg.aggression));
@@ -163,7 +166,6 @@ export function decideAction(ctx: AiContext): AiAction {
     return { type: "raise", amount: raiseTotal };
   }
 
-  // Call
   if (toCall >= ctx.stack) return { type: "allin" };
   return { type: "call" };
 }
