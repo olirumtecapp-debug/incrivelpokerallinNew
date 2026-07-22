@@ -7,6 +7,7 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant short (@media (max-height: 720px));
 
 /*
  * INCRÍVEL POKER ALL IN — HQ / Pop Art Design System
