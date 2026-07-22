@@ -175,7 +175,7 @@ export const startRoomHand = createServerFn({ method: "POST" })
     const { error: upsertErr } = await supabase.from("game_states")
       .upsert({
         room_id: data.roomId,
-        state: newState as unknown as Record<string, unknown>,
+        state: newState as never,
         version: (prev?.version ?? 0) + 1,
         updated_at: new Date().toISOString(),
       });
@@ -219,7 +219,7 @@ export const submitAction = createServerFn({ method: "POST" })
     const newState = enginePlayerAction(state, userId, data.action as PokerAction);
 
     await supabase.from("game_states").update({
-      state: newState as unknown as Record<string, unknown>,
+      state: newState as never,
       version: row.version + 1,
       updated_at: new Date().toISOString(),
     }).eq("room_id", data.roomId);
@@ -227,7 +227,7 @@ export const submitAction = createServerFn({ method: "POST" })
     await supabase.from("game_actions").insert({
       room_id: data.roomId, user_id: userId,
       action_type: data.action.type,
-      payload: (data.action as unknown as Record<string, unknown>),
+      payload: (data.action as never),
       hand_number: newState.handNumber,
     });
 
@@ -249,7 +249,7 @@ export const nextRoomHand = createServerFn({ method: "POST" })
     if (!state.awaitingAdvance) throw new Error("Mão em andamento");
     const newState = engineNextHand(state);
     await supabase.from("game_states").update({
-      state: newState as unknown as Record<string, unknown>,
+      state: newState as never,
       version: row.version + 1,
       updated_at: new Date().toISOString(),
     }).eq("room_id", data.roomId);
