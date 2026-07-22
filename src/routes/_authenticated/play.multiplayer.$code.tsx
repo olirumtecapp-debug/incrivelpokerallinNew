@@ -307,7 +307,7 @@ function Room() {
         <div className="font-body text-xs md:text-sm font-bold">Mão #{gameState.handNumber}</div>
       </header>
 
-      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2"
+      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 overflow-hidden"
            style={{ background: "radial-gradient(ellipse at center, var(--color-felt) 0%, var(--color-felt-dark) 100%)" }}>
 
         <div className="flex flex-wrap gap-1.5 md:gap-3 justify-center pt-1">
@@ -337,7 +337,7 @@ function Room() {
             {[0, 1, 2, 3, 4].map((i) => {
               const c = gameState.community[i];
               if (!c) return <div key={i} className="w-12 h-16 sm:w-16 sm:h-24 md:w-20 md:h-28 lg:w-24 lg:h-36 rounded-md border-2 border-dashed border-white/30" />;
-              return <PlayingCard key={i} card={c} size="lg" dealDelay={i * 60} />;
+              return <div key={i} className="short:[&>*]:!w-16 short:[&>*]:!h-24"><PlayingCard card={c} size="lg" dealDelay={i * 60} /></div>;
             })}
           </div>
         </div>
@@ -357,7 +357,7 @@ function Room() {
         )}
       </div>
 
-      <div className="shrink-0 p-2 md:p-3">
+      <div className="shrink-0 relative z-10 bg-background p-2 md:p-3 short:py-1.5">
         {gameState.awaitingAdvance ? (
           <div className="ink-border-thick hard-shadow bg-card rounded-lg p-2 md:p-3 flex flex-col items-center gap-1 max-w-3xl mx-auto">
             {gameState.winners.map((w, i) => {

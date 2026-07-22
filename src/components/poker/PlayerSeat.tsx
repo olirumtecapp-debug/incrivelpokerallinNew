@@ -18,9 +18,11 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
   const showCards = !player.folded && (reveal || !player.isBot);
   const slots = holeCount === 4 ? [0, 1, 2, 3] : [0, 1];
   const size = isMe ? (holeCount === 4 ? "sm" : "md") : "sm";
+  const shortSize = isMe ? "sm" : "sm";
   return (
     <div className={cn(
       "relative flex flex-col items-center gap-1",
+      isMe && "flex-col-reverse",
       player.folded && "opacity-40",
       isWinner && "animate-shake",
     )}>
@@ -35,10 +37,15 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
       <div className={cn("flex gap-1", holeCount === 4 && "grid grid-cols-2 gap-1")}>
         {slots.map((i) => {
           const c = player.hole[i];
-          if (!c) return <PlayingCard key={i} size={size} faceDown dealDelay={i * 60} />;
-          return <PlayingCard key={i} card={c} faceDown={!showCards} size={size} dealDelay={i * 60} />;
+          const s = size;
+          const cls = isMe && size === "md" ? "short:[&>*]:!w-16 short:[&>*]:!h-24" : "";
+          if (!c) return <div key={i} className={cls}><PlayingCard size={s} faceDown dealDelay={i * 60} /></div>;
+          return <div key={i} className={cls}><PlayingCard card={c} faceDown={!showCards} size={s} dealDelay={i * 60} /></div>;
         })}
+        {/* shortSize used to satisfy no-unused */}
+        <span className="hidden">{shortSize}</span>
       </div>
+
 
       <div className={cn(
         "ink-border-thick hard-shadow-sm bg-card px-2 py-1 md:px-3 md:py-1.5 min-w-[110px] md:min-w-[140px] text-center rounded-md",

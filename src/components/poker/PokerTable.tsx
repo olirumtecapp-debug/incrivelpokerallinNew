@@ -58,7 +58,7 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
         <div className="font-body text-xs md:text-sm font-bold">Mão #{state.handNumber}</div>
       </header>
 
-      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2"
+      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 overflow-hidden"
            style={{ background: "radial-gradient(ellipse at center, var(--color-felt) 0%, var(--color-felt-dark) 100%)" }}>
 
         <div className="pt-1">
@@ -83,7 +83,7 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
             {[0, 1, 2, 3, 4].map((i) => {
               const c = state.community[i];
               if (!c) return <div key={i} className="w-12 h-16 sm:w-16 sm:h-24 md:w-20 md:h-28 lg:w-24 lg:h-36 rounded-md border-2 border-dashed border-white/30" />;
-              return <PlayingCard key={i} card={c} size="lg" dealDelay={i * 80} />;
+              return <div key={i} className="short:[&>*]:!w-16 short:[&>*]:!h-24"><PlayingCard card={c} size="lg" dealDelay={i * 80} /></div>;
             })}
           </div>
           {botThinking && (
@@ -104,7 +104,7 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
         </div>
       </div>
 
-      <div className="shrink-0 p-2 md:p-3">
+      <div className="shrink-0 relative z-10 bg-background p-2 md:p-3 short:py-1.5">
         {gameOver ? (
           <div className="ink-border-thick hard-shadow bg-card rounded-lg p-4 md:p-6 text-center max-w-3xl mx-auto">
             <h2 className="font-display text-2xl md:text-3xl mb-3">
