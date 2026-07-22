@@ -105,12 +105,29 @@ function Room() {
       if (error || !r) { toast.error("Sala não encontrada"); navigate({ to: "/play/multiplayer" }); return; }
       if (cancelled) return;
       setRoom(r as RoomRow);
+
+      // Auto-join se ainda não é membro (fluxo de convite por link)
+      const { data: mine } = await supabase.from("room_players")
+        .select("id").eq("room_id", r.id).eq("user_id", uid).maybeSingle();
+      if (!mine) {
+        try {
+          await fnJoin({ data: { code: r.code } });
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "Falhou";
+          if (msg.toLowerCase().includes("cheia")) { setFull(true); return; }
+          toast.error(msg);
+          navigate({ to: "/play/multiplayer" });
+          return;
+        }
+      }
+
       await fetchPlayersAndProfiles(r.id);
       await fetchState(r.id);
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
+
 
   // Realtime: room_players + game_actions
   useEffect(() => {
