@@ -9,7 +9,7 @@ import { PlayerSeat } from "@/components/poker/PlayerSeat";
 import { PlayingCard } from "@/components/poker/PlayingCard";
 import { ActionPanel } from "@/components/poker/ActionPanel";
 import { ImpactText } from "@/components/comic/ImpactText";
-import { LandscapeHint } from "@/components/comic/LandscapeHint";
+
 import { ComicButton } from "@/components/comic/ComicButton";
 import { toast } from "sonner";
 import { sfx } from "@/lib/audio/sfx";
