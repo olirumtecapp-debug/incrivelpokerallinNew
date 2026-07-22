@@ -95,7 +95,7 @@ function Room() {
       sfx.unlock();
 
       const { data: r, error } = await supabase.from("rooms")
-        .select("*").eq("code", code).maybeSingle();
+        .select("id, code, status, small_blind, big_blind, variant, max_players").eq("code", code).maybeSingle();
       if (error || !r) { toast.error("Sala não encontrada"); navigate({ to: "/play/multiplayer" }); return; }
       if (cancelled) return;
       setRoom(r as RoomRow);
