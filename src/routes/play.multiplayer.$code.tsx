@@ -77,7 +77,8 @@ function Room() {
 
   const fetchPlayers = useCallback(async (roomId: string, guestId: string) => {
     const { data: pls } = await supabase.from("room_players")
-      .select("*").eq("room_id", roomId).order("seat", { ascending: true });
+      .select("id, room_id, guest_id, display_name, avatar_emoji, seat, stack, is_ready, joined_at")
+      .eq("room_id", roomId).order("seat", { ascending: true });
     if (pls) {
       setPlayers(pls as RoomPlayerRow[]);
       const me = pls.find((p) => p.guest_id === guestId);
