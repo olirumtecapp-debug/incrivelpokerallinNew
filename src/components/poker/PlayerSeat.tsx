@@ -11,12 +11,13 @@ interface Props {
   taunt?: string;
   isWinner?: boolean;
   holeCount?: number; // 2 (Hold'em/Short) ou 4 (Omaha)
+  isMe?: boolean; // aumenta as cartas do próprio jogador
 }
 
-export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner, holeCount = 2 }: Props) {
+export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner, holeCount = 2, isMe = false }: Props) {
   const showCards = !player.folded && (reveal || !player.isBot);
   const slots = holeCount === 4 ? [0, 1, 2, 3] : [0, 1];
-  const size = holeCount === 4 ? "sm" : "sm";
+  const size = isMe ? (holeCount === 4 ? "sm" : "md") : "sm";
   return (
     <div className={cn(
       "relative flex flex-col items-center gap-2",
