@@ -5,7 +5,9 @@ import { VARIANT_LIST, type VariantId } from "@/lib/poker/variants";
 import { createRoom, joinRoom, MAX_ROOM_PLAYERS } from "@/lib/rooms.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { getGuestId, getGuestName, setGuestName, getGuestEmoji, setGuestEmoji, EMOJI_CHOICES } from "@/lib/guest";
+import { getGuestId, getGuestName, setGuestName, getGuestAvatarId, setGuestAvatarId } from "@/lib/guest";
+import { AvatarPicker, AvatarBadge } from "@/components/multiplayer/AvatarPicker";
+import { DEFAULT_AVATAR_ID, getAvatar, type AvatarId } from "@/lib/avatars";
 
 export const Route = createFileRoute("/play/multiplayer")({
   head: () => ({
@@ -30,12 +32,14 @@ function Lobby() {
   const [joinCode, setJoinCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [name, setName] = useState("");
-  const [emoji, setEmoji] = useState("🎭");
+  const [avatarId, setAvatarId] = useState<AvatarId>(DEFAULT_AVATAR_ID);
 
   useEffect(() => {
     setName(getGuestName());
-    setEmoji(getGuestEmoji());
+    setAvatarId(getGuestAvatarId());
   }, []);
+
+  const currentAvatar = getAvatar(avatarId);
 
   function persistIdentity(): { ok: boolean; guestId: string; displayName: string } {
     const trimmed = name.trim();
@@ -44,7 +48,7 @@ function Lobby() {
       return { ok: false, guestId: "", displayName: "" };
     }
     setGuestName(trimmed);
-    setGuestEmoji(emoji);
+    setGuestAvatarId(avatarId);
     return { ok: true, guestId: getGuestId(), displayName: trimmed.slice(0, 20) };
   }
 
@@ -57,7 +61,7 @@ function Lobby() {
         data: {
           guestId: id.guestId,
           displayName: id.displayName,
-          avatarEmoji: emoji,
+          avatarEmoji: avatarId,
           variant, smallBlind, bigBlind, startStack: 1000, maxPlayers,
         },
       });
@@ -78,7 +82,7 @@ function Lobby() {
           code: joinCode.toUpperCase(),
           guestId: id.guestId,
           displayName: id.displayName,
-          avatarEmoji: emoji,
+          avatarEmoji: avatarId,
         },
       });
       navigate({ to: "/play/multiplayer/$code", params: { code } });
@@ -96,27 +100,24 @@ function Lobby() {
 
       <main className="max-w-3xl mx-auto p-4 md:p-6 space-y-6">
         <section className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
-          <h2 className="font-display text-2xl mb-3">SEU APELIDO</h2>
-          <div className="flex gap-2 items-center mb-3">
-            <div className="ink-border bg-white px-3 py-2 text-3xl">{emoji}</div>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Como te chamam?"
-              maxLength={20}
-              className="ink-border-thick bg-white px-3 py-2 font-display text-xl flex-1"
-            />
+          <h2 className="font-display text-2xl mb-3">SUA IDENTIDADE</h2>
+          <div className="flex gap-3 items-center mb-4">
+            <AvatarBadge avatarId={avatarId} size={64} />
+            <div className="flex-1">
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Como te chamam?"
+                maxLength={20}
+                className="w-full ink-border-thick bg-white px-3 py-2 font-display text-xl"
+              />
+              <div className="mt-1 text-xs text-muted-foreground font-display">
+                {currentAvatar.name}
+              </div>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-1.5">
-            {EMOJI_CHOICES.map((e) => (
-              <button
-                key={e}
-                type="button"
-                onClick={() => setEmoji(e)}
-                className={`ink-border w-10 h-10 text-2xl grid place-items-center rounded ${emoji === e ? "bg-pow-yellow" : "bg-white hover:bg-muted"}`}
-              >{e}</button>
-            ))}
-          </div>
+          <div className="text-xs font-bold mb-2 uppercase tracking-wide">Escolha seu personagem</div>
+          <AvatarPicker value={avatarId} onChange={setAvatarId} />
         </section>
 
         <section className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
