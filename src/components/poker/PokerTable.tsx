@@ -58,7 +58,7 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
         <div className="font-body text-xs md:text-sm font-bold">Mão #{state.handNumber}</div>
       </header>
 
-      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2"
+      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2 overflow-hidden"
            style={{ background: "radial-gradient(ellipse at center, var(--color-felt) 0%, var(--color-felt-dark) 100%)" }}>
 
         <div className="pt-1">
