@@ -9,6 +9,7 @@ import { PlayerSeat } from "@/components/poker/PlayerSeat";
 import { PlayingCard } from "@/components/poker/PlayingCard";
 import { ActionPanel } from "@/components/poker/ActionPanel";
 import { ImpactText } from "@/components/comic/ImpactText";
+import { LandscapeHint } from "@/components/comic/LandscapeHint";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { toast } from "sonner";
 import { sfx } from "@/lib/audio/sfx";
@@ -259,10 +260,14 @@ function Room() {
         <div className="font-body text-sm font-bold">Mão #{gameState.handNumber}</div>
       </header>
 
-      <div className="flex-1 flex flex-col items-center justify-between p-4 relative"
+      <div className="flex-1 flex flex-col items-center justify-between px-2 py-2 md:px-4 md:py-3 relative gap-2"
            style={{ background: "radial-gradient(ellipse at center, var(--color-felt) 0%, var(--color-felt-dark) 100%)" }}>
 
-        <div className="flex flex-wrap gap-3 justify-center mt-2">
+        <div className="md:hidden w-full max-w-md">
+          <LandscapeHint />
+        </div>
+
+        <div className="flex flex-wrap gap-2 md:gap-3 justify-center mt-1">
           {others.map((p) => {
             const idx = gameState.players.findIndex((x) => x.id === p.id);
             return (
@@ -279,23 +284,23 @@ function Room() {
           })}
         </div>
 
-        <div className="flex flex-col items-center gap-3 my-4">
-          <div className="ink-border-thick hard-shadow bg-paper/90 rounded-full px-6 py-2">
-            <div className="font-display text-2xl md:text-3xl text-pow-red text-center">
+        <div className="flex flex-col items-center gap-2 my-1">
+          <div className="ink-border-thick hard-shadow bg-paper/90 rounded-full px-5 py-1.5">
+            <div className="font-display text-xl md:text-3xl text-pow-red text-center leading-tight">
               POT: {gameState.pot.toLocaleString("pt-BR")}
             </div>
           </div>
-          <div className="flex gap-2 min-h-[112px] items-center">
+          <div className="flex gap-1.5 md:gap-2 items-center justify-center flex-wrap max-w-full">
             {[0, 1, 2, 3, 4].map((i) => {
               const c = gameState.community[i];
-              if (!c) return <div key={i} className="w-14 h-20 md:w-20 md:h-28 rounded-md border-2 border-dashed border-white/30" />;
+              if (!c) return <div key={i} className="w-20 h-28 md:w-24 md:h-36 rounded-md border-2 border-dashed border-white/30" />;
               return <PlayingCard key={i} card={c} size="lg" dealDelay={i * 60} />;
             })}
           </div>
         </div>
 
         {me && (
-          <div className="mb-2">
+          <div className="mb-1">
             <PlayerSeat
               player={me}
               isActive={meIdx === gameState.actionIdx && !gameState.awaitingAdvance}
@@ -303,6 +308,7 @@ function Room() {
               reveal={gameState.street === "showdown"}
               isWinner={winnerIds.has(me.id)}
               holeCount={v.holeCards}
+              isMe
             />
           </div>
         )}

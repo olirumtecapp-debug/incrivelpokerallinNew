@@ -5,15 +5,16 @@ import { cn } from "@/lib/utils";
 interface Props {
   card?: Card;
   faceDown?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   dealDelay?: number;
   highlighted?: boolean;
 }
 
 const sizeMap = {
-  sm: "w-10 h-14 text-lg",
-  md: "w-14 h-20 text-2xl",
-  lg: "w-20 h-28 text-4xl",
+  sm: "w-12 h-[68px] text-xl",
+  md: "w-16 h-24 text-2xl",
+  lg: "w-20 h-28 md:w-24 md:h-36 text-4xl",
+  xl: "w-24 h-36 md:w-32 md:h-48 text-5xl",
 };
 
 export function PlayingCard({ card, faceDown, size = "md", dealDelay = 0, highlighted }: Props) {
