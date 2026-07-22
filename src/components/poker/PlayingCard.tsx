@@ -11,10 +11,10 @@ interface Props {
 }
 
 const sizeMap = {
-  sm: "w-12 h-[68px] text-xl",
-  md: "w-16 h-24 text-2xl",
-  lg: "w-20 h-28 md:w-24 md:h-36 text-4xl",
-  xl: "w-24 h-36 md:w-32 md:h-48 text-5xl",
+  sm: "w-10 h-14 sm:w-12 sm:h-[68px] text-lg sm:text-xl",
+  md: "w-14 h-20 md:w-16 md:h-24 text-xl md:text-2xl",
+  lg: "w-12 h-16 sm:w-16 sm:h-24 md:w-20 md:h-28 lg:w-24 lg:h-36 text-2xl md:text-3xl lg:text-4xl",
+  xl: "w-20 h-28 md:w-32 md:h-48 text-4xl md:text-5xl",
 };
 
 export function PlayingCard({ card, faceDown, size = "md", dealDelay = 0, highlighted }: Props) {
