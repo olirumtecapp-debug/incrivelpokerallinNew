@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { VARIANT_LIST, type VariantId } from "@/lib/poker/variants";
-import { createRoom, joinRoom } from "@/lib/rooms.functions";
+import { createRoom, joinRoom, MAX_ROOM_PLAYERS } from "@/lib/rooms.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
@@ -26,7 +26,7 @@ function Lobby() {
   const [variant, setVariant] = useState<VariantId>("holdem");
   const [smallBlind, setSmallBlind] = useState(10);
   const [bigBlind, setBigBlind] = useState(20);
-  const [maxPlayers, setMaxPlayers] = useState(4);
+  const [maxPlayers, setMaxPlayers] = useState<number>(MAX_ROOM_PLAYERS);
   const [joinCode, setJoinCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState<string>("");
@@ -39,11 +39,13 @@ function Lobby() {
     setBusy(true);
     try {
       const { code } = await create({ data: { variant, smallBlind, bigBlind, startStack: 1000, maxPlayers } });
+      toast.success(`Sala criada! Código ${code}`);
       navigate({ to: "/play/multiplayer/$code", params: { code } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Falhou");
     } finally { setBusy(false); }
   }
+
 
   async function handleJoin() {
     setBusy(true);
@@ -83,7 +85,7 @@ function Lobby() {
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="grid grid-cols-2 gap-3 mb-4">
             <label className="text-sm font-bold">
               SB
               <input type="number" min={1} max={1000} value={smallBlind}
@@ -96,13 +98,28 @@ function Lobby() {
                 onChange={(e) => setBigBlind(parseInt(e.target.value) || 20)}
                 className="w-full ink-border bg-white px-2 py-1 rounded font-mono" />
             </label>
-            <label className="text-sm font-bold">
-              Máx jogadores
-              <input type="number" min={2} max={6} value={maxPlayers}
-                onChange={(e) => setMaxPlayers(parseInt(e.target.value) || 4)}
-                className="w-full ink-border bg-white px-2 py-1 rounded font-mono" />
-            </label>
           </div>
+          <div className="mb-4">
+            <div className="text-sm font-bold mb-2">Máx jogadores</div>
+            <div className="flex flex-wrap gap-2">
+              {[2, 3, 4, 5, 6].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setMaxPlayers(n)}
+                  className={`ink-border px-3 py-1.5 font-display text-lg rounded ${
+                    maxPlayers === n ? "bg-pow-yellow" : "bg-white hover:bg-muted"
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Máximo {MAX_ROOM_PLAYERS} jogadores por sala para manter o jogo fluido.
+            </p>
+          </div>
+
           <ComicButton variant="primary" onClick={handleCreate} disabled={busy}>
             {busy ? "..." : "CRIAR SALA"}
           </ComicButton>
