@@ -40,7 +40,7 @@ interface RoomRow {
 }
 interface RoomPlayerRow {
   id: string; room_id: string; guest_id: string | null; display_name: string;
-  avatar_emoji: string; seat: number; stack: number; is_ready: boolean;
+  avatar_emoji: string; seat: number; stack: number; is_ready: boolean; joined_at: string;
 }
 
 function Room() {
