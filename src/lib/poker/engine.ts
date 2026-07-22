@@ -1,7 +1,9 @@
 import type { Card } from "./cards";
 import { newDeck, shuffle } from "./cards";
-import { evaluateBest, HandRank, HAND_NAME } from "./evaluator";
+import { evaluateHand, HandRank, HAND_NAME } from "./evaluator";
 import type { AiPersonality } from "./ai";
+import type { VariantId } from "./variants";
+import { getVariant } from "./variants";
 
 export type Street = "preflop" | "flop" | "turn" | "river" | "showdown" | "ended";
 
@@ -12,12 +14,12 @@ export interface Player {
   hole: Card[];
   folded: boolean;
   allIn: boolean;
-  currentBet: number;   // aposta na rodada atual
-  totalBet: number;     // aposta total nesta mão
+  currentBet: number;
+  totalBet: number;
   hasActed: boolean;
   isBot: boolean;
   personality?: AiPersonality;
-  lastAction?: string;  // "CALL", "RAISE 100", ...
+  lastAction?: string;
   seat: number;
 }
 
@@ -35,6 +37,7 @@ export interface Winner {
 }
 
 export interface GameState {
+  variant: VariantId;
   players: Player[];
   deck: Card[];
   community: Card[];
@@ -68,6 +71,7 @@ export function createInitialState(opts: {
   players: Array<{ id: string; name: string; isBot: boolean; personality?: AiPersonality; startStack: number }>;
   smallBlind: number;
   bigBlind: number;
+  variant?: VariantId;
 }): GameState {
   const players: Player[] = opts.players.map((p, i) => ({
     id: p.id, name: p.name, stack: p.startStack, hole: [],
@@ -75,6 +79,7 @@ export function createInitialState(opts: {
     isBot: p.isBot, personality: p.personality, seat: i,
   }));
   return {
+    variant: opts.variant ?? "holdem",
     players, deck: [], community: [], pot: 0, currentBet: 0,
     minRaise: opts.bigBlind, smallBlind: opts.smallBlind, bigBlind: opts.bigBlind,
     dealerIdx: 0, actionIdx: 0, street: "ended", log: [], handNumber: 0,
@@ -82,11 +87,11 @@ export function createInitialState(opts: {
   };
 }
 
-/** Inicia nova mão. */
 export function startHand(state: GameState): GameState {
   const s = clone(state);
+  const v = getVariant(s.variant);
   s.handNumber += 1;
-  s.deck = shuffle(newDeck());
+  s.deck = shuffle(newDeck(s.variant));
   s.community = [];
   s.pot = 0;
   s.currentBet = 0;
@@ -95,7 +100,6 @@ export function startHand(state: GameState): GameState {
   s.awaitingAdvance = false;
   s.lastImpact = undefined;
 
-  // Reset players
   const activePlayers = s.players.filter((p) => p.stack > 0);
   if (activePlayers.length < 2) { s.street = "ended"; log(s, "Fim de jogo!"); return s; }
 
@@ -104,14 +108,12 @@ export function startHand(state: GameState): GameState {
     p.allIn = false; p.currentBet = 0; p.totalBet = 0; p.hasActed = false; p.lastAction = undefined;
   }
 
-  // Move dealer
   if (s.handNumber > 1) {
     s.dealerIdx = nextActiveSeat(s, s.dealerIdx);
   } else {
     s.dealerIdx = s.players.findIndex((p) => !p.folded);
   }
 
-  // Blinds — heads-up: dealer = SB, other = BB
   const activeSeats = s.players.map((p, i) => (!p.folded ? i : -1)).filter((i) => i >= 0);
   let sbIdx: number, bbIdx: number;
   if (activeSeats.length === 2) {
@@ -126,8 +128,8 @@ export function startHand(state: GameState): GameState {
   s.currentBet = s.bigBlind;
   s.minRaise = s.bigBlind;
 
-  // Deal 2 hole cards em ordem
-  for (let round = 0; round < 2; round++) {
+  // Deal N hole cards em ordem
+  for (let round = 0; round < v.holeCards; round++) {
     let idx = nextActiveSeat(s, s.dealerIdx);
     for (let k = 0; k < activeSeats.length; k++) {
       s.players[idx].hole.push(s.deck.pop()!);
@@ -135,10 +137,9 @@ export function startHand(state: GameState): GameState {
     }
   }
 
-  // Ação começa: heads-up preflop = dealer (SB), 3+ preflop = após BB
   s.actionIdx = activeSeats.length === 2 ? sbIdx : nextActiveSeat(s, bbIdx);
   s.street = "preflop";
-  log(s, `— Mão #${s.handNumber} —`);
+  log(s, `— Mão #${s.handNumber} (${v.short}) —`);
   return s;
 }
 
@@ -182,11 +183,11 @@ function clone(s: GameState): GameState {
   };
 }
 
-// ---- Actions ----
-export function playerAction(state: GameState, playerId: string, action:
+export type PokerAction =
   | { type: "fold" } | { type: "check" } | { type: "call" }
-  | { type: "raise"; amount: number } | { type: "allin" }
-): GameState {
+  | { type: "raise"; amount: number } | { type: "allin" };
+
+export function playerAction(state: GameState, playerId: string, action: PokerAction): GameState {
   const s = clone(state);
   const idx = s.players.findIndex((p) => p.id === playerId);
   if (idx !== s.actionIdx) return s;
@@ -202,7 +203,7 @@ export function playerAction(state: GameState, playerId: string, action:
       break;
     }
     case "check": {
-      if (toCall > 0) return state; // inválido
+      if (toCall > 0) return state;
       p.hasActed = true; p.lastAction = "CHECK";
       log(s, `${p.name} deu check`, "action");
       break;
@@ -216,7 +217,7 @@ export function playerAction(state: GameState, playerId: string, action:
       break;
     }
     case "raise": {
-      const targetTotal = action.amount; // total de currentBet após raise
+      const targetTotal = action.amount;
       const raiseBy = targetTotal - s.currentBet;
       if (raiseBy < s.minRaise) return state;
       const pay = targetTotal - p.currentBet;
@@ -226,7 +227,6 @@ export function playerAction(state: GameState, playerId: string, action:
       s.currentBet = targetTotal;
       s.minRaise = raiseBy;
       p.hasActed = true; p.lastAction = `RAISE ${targetTotal}`;
-      // Reset hasActed dos outros ativos
       s.players.forEach((op) => { if (op.id !== p.id && !op.folded && !op.allIn) op.hasActed = false; });
       impact(s, `RAISE! ${targetTotal}`);
       break;
@@ -251,28 +251,21 @@ export function playerAction(state: GameState, playerId: string, action:
 }
 
 function advanceIfNeeded(s: GameState): GameState {
-  // Se só sobrou 1 → vence
   const active = s.players.filter((p) => !p.folded);
   if (active.length === 1) return finishHand(s);
-
   if (roundIsSettled(s)) return advanceStreet(s);
-
-  // Se ninguém pode agir (todos all-in) → roda até showdown
   if (!anyoneCanAct(s)) return advanceStreet(s);
-
-  // Próximo jogador
   s.actionIdx = nextActiveSeat(s, s.actionIdx);
   return s;
 }
 
 function advanceStreet(s: GameState): GameState {
-  // Reset per-round
   s.players.forEach((p) => { p.currentBet = 0; p.hasActed = false; });
   s.currentBet = 0;
   s.minRaise = s.bigBlind;
 
   if (s.street === "preflop") {
-    s.deck.pop(); // burn
+    s.deck.pop();
     s.community.push(s.deck.pop()!, s.deck.pop()!, s.deck.pop()!);
     s.street = "flop"; impact(s, "FLOP!");
   } else if (s.street === "flop") {
@@ -285,13 +278,11 @@ function advanceStreet(s: GameState): GameState {
     return finishHand(s);
   }
 
-  // Se todos all-in / apenas 1 ativo — continua deal automático
   if (!anyoneCanAct(s)) {
     if (s.street !== "river") return advanceStreet(s);
     return finishHand(s);
   }
 
-  // Postflop: primeiro ativo à esquerda do dealer
   s.actionIdx = nextActiveSeat(s, s.dealerIdx);
   return s;
 }
@@ -309,7 +300,6 @@ function finishHand(s: GameState): GameState {
     return s;
   }
 
-  // Side pots baseados em totalBet
   const contenders = [...inHand].sort((a, b) => a.totalBet - b.totalBet);
   const allInHand = s.players.filter((p) => p.totalBet > 0);
   const winners: Winner[] = [];
@@ -319,19 +309,15 @@ function finishHand(s: GameState): GameState {
   for (const c of contenders) {
     const cap = c.totalBet;
     if (cap === prevCap) { processed.add(c.id); continue; }
-    // pot = sum de min(cap - prevCap, p.totalBet - prevCap) para todos que apostaram >= prevCap
     let potSize = 0;
     for (const p of allInHand) {
       if (p.totalBet <= prevCap) continue;
-      const contrib = Math.min(p.totalBet, cap) - prevCap;
-      potSize += contrib;
+      potSize += Math.min(p.totalBet, cap) - prevCap;
     }
-    // Elegíveis: inHand com totalBet >= cap
     const eligible = inHand.filter((p) => p.totalBet >= cap);
-    // Melhor mão
     let best: { score: number; ids: string[]; handName: string; cards: Card[] } | null = null;
     for (const p of eligible) {
-      const ev = evaluateBest([...p.hole, ...s.community]);
+      const ev = evaluateHand(p.hole, s.community, s.variant);
       if (!best || ev.score > best.score) best = { score: ev.score, ids: [p.id], handName: ev.name, cards: ev.best };
       else if (ev.score === best.score) best.ids.push(p.id);
     }
@@ -347,7 +333,6 @@ function finishHand(s: GameState): GameState {
     prevCap = cap;
     processed.add(c.id);
   }
-  // resíduo → primeiro elegível
   if (remaining > 0 && winners[0]) {
     const p = s.players.find((x) => x.id === winners[0].playerId)!;
     p.stack += remaining;
@@ -356,7 +341,6 @@ function finishHand(s: GameState): GameState {
   s.winners = winners;
   s.pot = 0;
 
-  // Impact message
   const w = winners[0];
   if (w) {
     const player = s.players.find((p) => p.id === w.playerId)!;
@@ -366,7 +350,6 @@ function finishHand(s: GameState): GameState {
   return s;
 }
 
-/** Chama após showdown pra ir para próxima mão. */
 export function nextHand(state: GameState): GameState {
   return startHand(state);
 }
