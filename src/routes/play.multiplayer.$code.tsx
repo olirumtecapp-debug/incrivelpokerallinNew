@@ -12,7 +12,9 @@ import { ImpactText } from "@/components/comic/ImpactText";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { toast } from "sonner";
 import { sfx } from "@/lib/audio/sfx";
-import { getGuestId, getGuestName, getGuestEmoji, setGuestName, setGuestEmoji, EMOJI_CHOICES } from "@/lib/guest";
+import { getGuestId, getGuestName, getGuestAvatarId, setGuestName, setGuestAvatarId } from "@/lib/guest";
+import { AvatarPicker, AvatarBadge } from "@/components/multiplayer/AvatarPicker";
+import { DEFAULT_AVATAR_ID, type AvatarId } from "@/lib/avatars";
 
 export const Route = createFileRoute("/play/multiplayer/$code")({
   head: ({ params }) => ({
