@@ -139,7 +139,10 @@ function CampaignMatch({ stage, boss, onExit, onWin }: {
             "{stage.intro}"
           </div>
           <div className="mt-4 flex items-center justify-center gap-3">
-            <div className={`${boss.avatarBg} ink-border-thick w-14 h-14 rounded-full flex items-center justify-center text-3xl`}>{boss.emoji}</div>
+            <div className={`${boss.avatarBg} ink-border-thick w-14 h-14 rounded-full overflow-hidden flex items-center justify-center`}>
+              <img src={`/__l5e/assets-v1/${''}`} alt="" className="hidden" />
+              <AvatarImg avatarId={boss.avatarId} />
+            </div>
             <div>
               <div className="font-display text-lg">{boss.name}</div>
               <div className="text-xs font-bold text-pow-red">{boss.title}</div>
