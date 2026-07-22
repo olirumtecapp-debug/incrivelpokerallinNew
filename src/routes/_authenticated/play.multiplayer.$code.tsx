@@ -9,7 +9,7 @@ import { PlayerSeat } from "@/components/poker/PlayerSeat";
 import { PlayingCard } from "@/components/poker/PlayingCard";
 import { ActionPanel } from "@/components/poker/ActionPanel";
 import { ImpactText } from "@/components/comic/ImpactText";
-import { LandscapeHint } from "@/components/comic/LandscapeHint";
+
 import { ComicButton } from "@/components/comic/ComicButton";
 import { toast } from "sonner";
 import { sfx } from "@/lib/audio/sfx";
@@ -249,25 +249,21 @@ function Room() {
   const winnerIds = new Set(gameState.winners.map((w) => w.playerId));
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col">
       <ImpactText text={gameState.lastImpact?.text} ts={gameState.lastImpact?.ts} />
-      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 ink-border-thick bg-card">
-        <div className="flex min-w-0 items-center gap-3">
-          <Link to="/play/multiplayer" className="font-display text-xl text-pow-red hover:text-ink shrink-0">← LOBBY</Link>
-          <span className="truncate font-display text-lg">SALA {room.code}</span>
-          <span className="ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
+      <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 ink-border-thick bg-card">
+        <div className="flex min-w-0 items-center gap-2">
+          <Link to="/play/multiplayer" className="font-display text-base md:text-lg text-pow-red hover:text-ink shrink-0">← LOBBY</Link>
+          <span className="truncate font-display text-sm md:text-base">SALA {room.code}</span>
+          <span className="hidden md:inline ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
         </div>
-        <div className="font-body text-sm font-bold">Mão #{gameState.handNumber}</div>
+        <div className="font-body text-xs md:text-sm font-bold">Mão #{gameState.handNumber}</div>
       </header>
 
-      <div className="flex-1 flex flex-col items-center justify-between px-2 py-2 md:px-4 md:py-3 relative gap-2"
+      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2"
            style={{ background: "radial-gradient(ellipse at center, var(--color-felt) 0%, var(--color-felt-dark) 100%)" }}>
 
-        <div className="md:hidden w-full max-w-md">
-          <LandscapeHint />
-        </div>
-
-        <div className="flex flex-wrap gap-2 md:gap-3 justify-center mt-1">
+        <div className="flex flex-wrap gap-1.5 md:gap-3 justify-center pt-1">
           {others.map((p) => {
             const idx = gameState.players.findIndex((x) => x.id === p.id);
             return (
@@ -284,23 +280,23 @@ function Room() {
           })}
         </div>
 
-        <div className="flex flex-col items-center gap-2 my-1">
-          <div className="ink-border-thick hard-shadow bg-paper/90 rounded-full px-5 py-1.5">
-            <div className="font-display text-xl md:text-3xl text-pow-red text-center leading-tight">
+        <div className="flex flex-col items-center gap-1 md:gap-2 w-full max-w-4xl">
+          <div className="ink-border-thick hard-shadow bg-paper/90 rounded-full px-3 py-0.5 md:px-5 md:py-1.5">
+            <div className="font-display text-base md:text-2xl text-pow-red text-center leading-tight">
               POT: {gameState.pot.toLocaleString("pt-BR")}
             </div>
           </div>
-          <div className="flex gap-1.5 md:gap-2 items-center justify-center flex-wrap max-w-full">
+          <div className="flex gap-1 md:gap-2 items-center justify-center flex-wrap max-w-full">
             {[0, 1, 2, 3, 4].map((i) => {
               const c = gameState.community[i];
-              if (!c) return <div key={i} className="w-20 h-28 md:w-24 md:h-36 rounded-md border-2 border-dashed border-white/30" />;
+              if (!c) return <div key={i} className="w-12 h-16 sm:w-16 sm:h-24 md:w-20 md:h-28 lg:w-24 lg:h-36 rounded-md border-2 border-dashed border-white/30" />;
               return <PlayingCard key={i} card={c} size="lg" dealDelay={i * 60} />;
             })}
           </div>
         </div>
 
         {me && (
-          <div className="mb-1">
+          <div className="pb-1">
             <PlayerSeat
               player={me}
               isActive={meIdx === gameState.actionIdx && !gameState.awaitingAdvance}
@@ -314,22 +310,22 @@ function Room() {
         )}
       </div>
 
-      <div className="p-3 md:p-4">
+      <div className="shrink-0 p-2 md:p-3">
         {gameState.awaitingAdvance ? (
-          <div className="ink-border-thick hard-shadow bg-card rounded-lg p-4 flex flex-col items-center gap-2">
+          <div className="ink-border-thick hard-shadow bg-card rounded-lg p-2 md:p-3 flex flex-col items-center gap-1 max-w-3xl mx-auto">
             {gameState.winners.map((w, i) => {
               const p = gameState.players.find((pl) => pl.id === w.playerId)!;
               return (
-                <div key={i} className="font-display text-xl">
+                <div key={i} className="font-display text-base md:text-xl text-center">
                   {p.name} ganhou <span className="text-pow-red">{w.amount}</span>
-                  {w.handName && <span className="text-muted-foreground text-base"> — {w.handName}</span>}
+                  {w.handName && <span className="text-muted-foreground text-xs md:text-base"> — {w.handName}</span>}
                 </div>
               );
             })}
             {isCreator ? (
-              <ComicButton variant="primary" onClick={handleNext} disabled={busy}>PRÓXIMA MÃO</ComicButton>
+              <ComicButton variant="primary" size="sm" onClick={handleNext} disabled={busy}>PRÓXIMA MÃO</ComicButton>
             ) : (
-              <div className="text-sm text-muted-foreground">Aguardando o host iniciar a próxima mão...</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Aguardando o host iniciar a próxima mão...</div>
             )}
           </div>
         ) : me ? (
@@ -339,3 +335,4 @@ function Room() {
     </div>
   );
 }
+
