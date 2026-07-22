@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { PERSONALITIES } from "@/lib/poker/ai";
 import { PokerTable } from "@/components/poker/PokerTable";
+import { AvatarBadge } from "@/components/multiplayer/AvatarPicker";
 import { usePokerStore } from "@/lib/poker/store";
 
 export const Route = createFileRoute("/play/campaign")({
