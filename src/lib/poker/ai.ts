@@ -3,6 +3,7 @@ import { evaluateHand } from "./evaluator";
 import { newDeck } from "./cards";
 import type { VariantId } from "./variants";
 import { getVariant } from "./variants";
+import type { AvatarId } from "@/lib/avatars";
 
 export type Difficulty = "beginner" | "easy" | "medium" | "hard";
 
@@ -13,6 +14,7 @@ export interface AiPersonality {
   difficulty: Difficulty;
   avatarBg: string;
   emoji: string;
+  avatarId: AvatarId;
   taunts: {
     win: string[];
     lose: string[];
@@ -23,9 +25,10 @@ export interface AiPersonality {
 }
 
 export const PERSONALITIES: AiPersonality[] = [
+  // ---------------- BEGINNER ----------------
   {
     id: "aprendiz", name: "Zé Cartinhas", title: "Aprendiz de Cartas", difficulty: "beginner",
-    avatarBg: "bg-pow-blue", emoji: "🎓",
+    avatarBg: "bg-pow-blue", emoji: "🎓", avatarId: "clown",
     taunts: {
       win: ["Serio? Ganhei? UEBA!", "Foi sorte, juro!"],
       lose: ["Ainda tô aprendendo...", "Ops."],
@@ -35,8 +38,32 @@ export const PERSONALITIES: AiPersonality[] = [
     },
   },
   {
+    id: "novato", name: "Novato Sortudo", title: "Iniciante de Sorte", difficulty: "beginner",
+    avatarBg: "bg-zinc-400", emoji: "🍀", avatarId: "robot",
+    taunts: {
+      win: ["Bip bop! Ganhei!", "Cálculo? Não, sorte!"],
+      lose: ["Erro 404: vitória.", "Reiniciando..."],
+      bluffCalled: ["Blefe detectado."],
+      allIn: ["ALL-IN.EXE"],
+      fold: ["Abortar missão."],
+    },
+  },
+  {
+    id: "timida", name: "Roquinha Tímida", title: "Aprendiz do Palco", difficulty: "beginner",
+    avatarBg: "bg-orange-500", emoji: "🎸", avatarId: "rocker",
+    taunts: {
+      win: ["Ai... ganhei?", "Foi mal, foi mal!"],
+      lose: ["Tudo bem, próxima!", "Nem doeu."],
+      bluffCalled: ["Foi mal a tentativa..."],
+      allIn: ["Vai tudo! AAAH!"],
+      fold: ["Melhor não arriscar."],
+    },
+  },
+
+  // ---------------- EASY ----------------
+  {
     id: "sorridente", name: "Dona Sorriso", title: "Sorridente da Média", difficulty: "easy",
-    avatarBg: "bg-pow-yellow", emoji: "😄",
+    avatarBg: "bg-pow-yellow", emoji: "😄", avatarId: "queen",
     taunts: {
       win: ["Aha! Que fofinho!", "Toma essa!"],
       lose: ["Ah que penaaa hihi", "Foi por pouco!"],
@@ -46,8 +73,32 @@ export const PERSONALITIES: AiPersonality[] = [
     },
   },
   {
+    id: "capitao", name: "Capitão Gargalhada", title: "Corsário do Rio", difficulty: "easy",
+    avatarBg: "bg-teal-600", emoji: "🏴‍☠️", avatarId: "pirate",
+    taunts: {
+      win: ["ARRR! Tesouro meu!", "Ha-har! Fácil!"],
+      lose: ["Maldição do mar!", "Escapou dessa vez."],
+      bluffCalled: ["Bom faro, marujo!"],
+      allIn: ["Tudo pro baú!"],
+      fold: ["Recuar as velas..."],
+    },
+  },
+  {
+    id: "cowboy", name: "Cowboy Feliz", title: "Xerife das Fichas", difficulty: "easy",
+    avatarBg: "bg-amber-700", emoji: "🤠", avatarId: "cowboy",
+    taunts: {
+      win: ["Yeee-haw!", "Ficha na algibeira!"],
+      lose: ["Diacho...", "Perdi por um triz."],
+      bluffCalled: ["Bem visto, parceiro."],
+      allIn: ["Duelo ao amanhecer!"],
+      fold: ["Saco a bota."],
+    },
+  },
+
+  // ---------------- MEDIUM ----------------
+  {
     id: "tatico", name: "Doutor Naipe", title: "Tático de HQ", difficulty: "medium",
-    avatarBg: "bg-felt", emoji: "🧠",
+    avatarBg: "bg-felt", emoji: "🧠", avatarId: "detective",
     taunts: {
       win: ["Cálculo perfeito.", "Exatamente como previ."],
       lose: ["Interessante...", "Variação estatística."],
@@ -57,8 +108,32 @@ export const PERSONALITIES: AiPersonality[] = [
     },
   },
   {
+    id: "mago", name: "Mago dos Números", title: "Feiticeiro do Range", difficulty: "medium",
+    avatarBg: "bg-purple-700", emoji: "🔮", avatarId: "mage",
+    taunts: {
+      win: ["A cartomancia falou.", "Vi no cristal."],
+      lose: ["A magia falhou hoje.", "Estranho..."],
+      bluffCalled: ["Sua visão é apurada."],
+      allIn: ["Feitiço supremo!"],
+      fold: ["Guardo a varinha."],
+    },
+  },
+  {
+    id: "chefe", name: "O Chefe", title: "Mandachuva da Mesa", difficulty: "medium",
+    avatarBg: "bg-pow-red", emoji: "🎩", avatarId: "boss",
+    taunts: {
+      win: ["Negócio fechado.", "Como combinado."],
+      lose: ["Isso vai custar caro.", "Erro contabilizado."],
+      bluffCalled: ["Você tem olho, hein?"],
+      allIn: ["Vamos ao que interessa."],
+      fold: ["Hoje não é o dia."],
+    },
+  },
+
+  // ---------------- HARD ----------------
+  {
     id: "mestre", name: "Vilão do Blefe", title: "Mestre do Bluff", difficulty: "hard",
-    avatarBg: "bg-pow-red", emoji: "🎭",
+    avatarBg: "bg-pow-red", emoji: "🎭", avatarId: "hacker",
     taunts: {
       win: ["Você caiu direitinho.", "HAHA! Previsível."],
       lose: ["Sorte de principiante.", "Aproveita, não se repete."],
@@ -67,10 +142,38 @@ export const PERSONALITIES: AiPersonality[] = [
       fold: ["Guardando as balas."],
     },
   },
+  {
+    id: "tubarao", name: "Tubarão Silencioso", title: "Predador da Mesa", difficulty: "hard",
+    avatarBg: "bg-slate-800", emoji: "🦈", avatarId: "shark",
+    taunts: {
+      win: ["...", "Sangue na água."],
+      lose: ["Interessante escolha.", "Anotado."],
+      bluffCalled: ["Você me viu."],
+      allIn: ["Mergulhe comigo."],
+      fold: ["Espero minha vez."],
+    },
+  },
+  {
+    id: "ninja", name: "Sombra Ninja", title: "Assassina de Fichas", difficulty: "hard",
+    avatarBg: "bg-neutral-900", emoji: "🥷", avatarId: "ninja",
+    taunts: {
+      win: ["Silencioso e letal.", "Golpe certeiro."],
+      lose: ["Sombra dissipada.", "Retiro-me."],
+      bluffCalled: ["Boa emboscada."],
+      allIn: ["Tudo ou nada. Ninpo!"],
+      fold: ["Desapareço."],
+    },
+  },
 ];
 
+export function personalitiesForDifficulty(d: Difficulty): AiPersonality[] {
+  return PERSONALITIES.filter((p) => p.difficulty === d);
+}
+
 export function personalityForDifficulty(d: Difficulty): AiPersonality {
-  return PERSONALITIES.find((p) => p.difficulty === d) ?? PERSONALITIES[0];
+  const pool = personalitiesForDifficulty(d);
+  if (pool.length === 0) return PERSONALITIES[0];
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 /** Monte Carlo com suporte a variantes. */
