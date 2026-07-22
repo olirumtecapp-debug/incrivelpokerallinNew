@@ -9,12 +9,15 @@ import {
 import type { VariantId } from "@/lib/poker/variants";
 import type { Card } from "@/lib/poker/cards";
 
+export const MAX_ROOM_PLAYERS = 6;
+
 function randomCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "PKR-";
   for (let i = 0; i < 4; i++) out += chars[Math.floor(Math.random() * chars.length)];
   return out;
 }
+
 
 // ============ CREATE ROOM ============
 export const createRoom = createServerFn({ method: "POST" })
@@ -24,10 +27,12 @@ export const createRoom = createServerFn({ method: "POST" })
     smallBlind: z.number().int().min(1).max(1000),
     bigBlind: z.number().int().min(2).max(2000),
     startStack: z.number().int().min(100).max(100000),
-    maxPlayers: z.number().int().min(2).max(6),
+    maxPlayers: z.number().int().min(2).max(MAX_ROOM_PLAYERS),
   }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    const maxPlayers = Math.min(data.maxPlayers, MAX_ROOM_PLAYERS);
+
     let code = "";
     let attempts = 0;
     while (attempts < 5) {
@@ -42,10 +47,11 @@ export const createRoom = createServerFn({ method: "POST" })
       small_blind: data.smallBlind,
       big_blind: data.bigBlind,
       start_stack: data.startStack,
-      max_players: data.maxPlayers,
+      max_players: maxPlayers,
       created_by: userId,
       status: "lobby",
     }).select("*").single();
+
     if (error) throw new Error(error.message);
     // Auto-junta o criador no seat 0
     const { error: joinErr } = await supabase.from("room_players").insert({
@@ -73,9 +79,11 @@ export const joinRoom = createServerFn({ method: "POST" })
     const { data: seats } = await supabase.from("room_players")
       .select("seat").eq("room_id", room.id);
     const taken = new Set((seats ?? []).map((s) => s.seat));
-    if (taken.size >= room.max_players) throw new Error("Sala cheia");
+    const effectiveMax = Math.min(room.max_players ?? MAX_ROOM_PLAYERS, MAX_ROOM_PLAYERS);
+    if (taken.size >= effectiveMax) throw new Error(`Sala cheia (limite ${MAX_ROOM_PLAYERS} jogadores)`);
     let seat = 0;
     while (taken.has(seat)) seat++;
+
 
     const { error } = await supabase.from("room_players").insert({
       room_id: room.id, user_id: userId, seat, stack: room.start_stack,
