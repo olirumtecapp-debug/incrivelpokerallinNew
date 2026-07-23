@@ -6,14 +6,21 @@ interface Props {
   /** Se true, exibe botão de fechar e guarda no localStorage. */
   dismissible?: boolean;
   storageKey?: string;
+  /** Se true, cobre a tela inteira bloqueando interação até girar. Ideal em telas de jogo. */
+  blocking?: boolean;
 }
 
 /**
  * Balão HQ orientando o jogador a virar o celular pra deitado.
- * Aparece só em telas estreitas (<= 900px de largura) e orientação portrait.
- * Auto-some quando o usuário gira o aparelho.
+ * Em modo `blocking`, vira um overlay de tela cheia impedindo interação (fallback
+ * universal para navegadores que não travam orientação — ex.: iOS Safari).
  */
-export function LandscapeHint({ onlyMobilePortrait = true, dismissible = false, storageKey = "landscape-hint-dismissed" }: Props) {
+export function LandscapeHint({
+  onlyMobilePortrait = true,
+  dismissible = false,
+  storageKey = "landscape-hint-dismissed",
+  blocking = false,
+}: Props) {
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -39,6 +46,22 @@ export function LandscapeHint({ onlyMobilePortrait = true, dismissible = false, 
   }, [onlyMobilePortrait]);
 
   if (!visible || dismissed) return null;
+
+  if (blocking) {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-ink/90 grid place-items-center p-6 text-center">
+        <div className="ink-border-thick hard-shadow-lg halftone-yellow bg-pow-yellow rounded-lg px-6 py-8 max-w-xs">
+          <div className="text-6xl mb-3 animate-shake" aria-hidden>📱↻</div>
+          <h2 className="font-display text-2xl text-ink leading-tight mb-2">
+            GIRE O CELULAR!
+          </h2>
+          <p className="font-body text-sm text-ink font-bold">
+            Este jogo funciona melhor com a tela <span className="whitespace-nowrap">DEITADA</span>.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="ink-border-thick hard-shadow-sm halftone-yellow bg-pow-yellow rounded-md px-3 py-2 flex items-center gap-3 text-ink animate-shake">
