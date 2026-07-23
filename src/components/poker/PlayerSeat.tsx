@@ -45,24 +45,24 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
       </div>
 
       <div className={cn(
-        "ink-border-thick hard-shadow-sm bg-card px-2 py-1 md:px-3 md:py-1.5 min-w-[110px] md:min-w-[140px] text-center rounded-md",
+        "ink-border-thick hard-shadow-sm bg-card px-2 py-1 md:px-3 md:py-1.5 landscape-short:px-1.5 landscape-short:py-0.5 min-w-[110px] md:min-w-[140px] landscape-short:!min-w-[90px] text-center rounded-md",
         isActive && "bg-pow-yellow scale-105 transition-transform",
         isWinner && "bg-pow-yellow",
       )}>
-        <div className="flex items-center justify-center gap-1.5">
+        <div className="flex items-center justify-center gap-1.5 landscape-short:gap-1">
           {avatarId ? (
             <AvatarBadge avatarId={avatarId} size={isMe ? 32 : 24} />
           ) : player.personality?.avatarId ? (
             <AvatarBadge avatarId={player.personality.avatarId} size={isMe ? 32 : 24} />
           ) : (
-            player.personality?.emoji && <span className="text-base md:text-lg">{player.personality.emoji}</span>
+            player.personality?.emoji && <span className="text-base md:text-lg landscape-short:text-xs">{player.personality.emoji}</span>
           )}
-          <div className="font-display text-sm md:text-base truncate">{player.name}</div>
+          <div className="font-display text-sm md:text-base landscape-short:text-xs truncate">{player.name}</div>
           {isDealer && (
             <span className="ink-border bg-white text-ink text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">D</span>
           )}
         </div>
-        <div className="font-body font-bold text-xs text-muted-foreground">
+        <div className="font-body font-bold text-xs landscape-short:text-[10px] text-muted-foreground">
           🪙 {player.stack.toLocaleString("pt-BR")}
         </div>
         {player.currentBet > 0 && (
@@ -71,7 +71,7 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
           </div>
         )}
         {player.lastAction && !player.folded && (
-          <div className="font-display text-[10px] text-pow-red">{player.lastAction}</div>
+          <div className="font-display text-[10px] text-pow-red landscape-short:hidden">{player.lastAction}</div>
         )}
         {player.folded && <div className="font-display text-[10px] text-muted-foreground">FOLD</div>}
         {player.allIn && <div className="font-display text-[10px] text-pow-red">ALL-IN</div>}
