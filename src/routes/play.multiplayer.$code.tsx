@@ -345,7 +345,7 @@ function Room() {
       <ImpactText text={gameState.lastImpact?.text} ts={gameState.lastImpact?.ts} />
       <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 landscape-short:py-0.5 landscape-short:px-2 ink-border-thick bg-card">
         <div className="flex min-w-0 items-center gap-2">
-          <Link to="/play/multiplayer" className="font-display text-base md:text-lg landscape-short:text-xs text-pow-red hover:text-ink shrink-0">← LOBBY</Link>
+          <Link to="/play/multiplayer" className="font-display text-base md:text-lg landscape-short:text-xs text-pow-red hover:text-ink-fixed shrink-0">← LOBBY</Link>
           <span className="truncate font-display text-sm md:text-base landscape-short:text-xs">SALA {room.code}</span>
           <span className="hidden md:inline landscape-short:!hidden ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
         </div>

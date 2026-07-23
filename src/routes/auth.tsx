@@ -76,7 +76,7 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="ink-border-thick bg-pow-yellow p-4 flex items-center gap-3">
+      <header className="ink-border-thick bg-pow-yellow text-ink-fixed p-4 flex items-center gap-3">
         <Link to="/" className="font-display text-xl shrink-0">← MENU</Link>
         <h1 className="font-display text-2xl md:text-3xl truncate">🔑 ENTRAR</h1>
       </header>
