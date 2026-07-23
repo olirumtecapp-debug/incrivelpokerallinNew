@@ -122,7 +122,10 @@ export const usePokerStore = create<PokerStore>((set, get) => ({
       if (taunts) {
         if (decision.type === "fold") tauntText = pick(taunts.fold);
         else if (decision.type === "allin") tauntText = pick(taunts.allIn);
-        else if (Math.random() < 0.3) tauntText = pick(taunts.win);
+        else if (decision.type === "raise" && Math.random() < 0.55) tauntText = pick([...taunts.win, ...RAISE_CHATTER]);
+        else if (decision.type === "call" && Math.random() < 0.35) tauntText = pick(CALL_CHATTER);
+        else if (decision.type === "check" && Math.random() < 0.3) tauntText = pick(CHECK_CHATTER);
+        else if (Math.random() < 0.15) tauntText = pick(IDLE_CHATTER);
       }
       set({
         state: next, botThinking: false,
