@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { VARIANT_LIST } from "@/lib/poker/variants";
 import { sfx } from "@/lib/audio/sfx";
+import { ThemeToggle } from "@/components/comic/ThemeToggle";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
