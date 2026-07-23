@@ -5,6 +5,7 @@ import { PERSONALITIES } from "@/lib/poker/ai";
 import { VARIANT_LIST, type VariantId } from "@/lib/poker/variants";
 import { PokerTable } from "@/components/poker/PokerTable";
 import { ComicButton } from "@/components/comic/ComicButton";
+import { AvatarBadge } from "@/components/multiplayer/AvatarPicker";
 import { sfx } from "@/lib/audio/sfx";
 
 export const Route = createFileRoute("/play/casual")({
