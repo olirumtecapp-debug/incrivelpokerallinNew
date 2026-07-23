@@ -59,7 +59,7 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
           )}
           <div className="font-display text-sm md:text-base landscape-short:text-xs truncate">{player.name}</div>
           {isDealer && (
-            <span className="ink-border bg-white text-ink text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">D</span>
+            <span className="ink-border bg-white text-ink-fixed text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">D</span>
           )}
         </div>
         <div className="font-body font-bold text-xs landscape-short:text-[10px] text-muted-foreground">
