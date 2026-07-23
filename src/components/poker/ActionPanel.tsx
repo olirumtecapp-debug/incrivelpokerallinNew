@@ -29,13 +29,13 @@ export function ActionPanel({ state, onAction, disabled }: Props) {
   const clamped = Math.max(minRaiseTotal, Math.min(maxTotal, raise));
 
   return (
-    <div className="ink-border-thick hard-shadow bg-card rounded-lg p-2 md:p-3 flex flex-col gap-2 max-w-3xl mx-auto w-full">
-      <div className="flex justify-between text-xs font-body font-bold">
+    <div className="ink-border-thick hard-shadow bg-card rounded-lg p-2 md:p-3 landscape-short:p-1 flex flex-col gap-2 landscape-short:gap-1 max-w-3xl mx-auto w-full">
+      <div className="flex justify-between text-xs landscape-short:text-[10px] font-body font-bold">
         <span>POT: <span className="text-pow-red">{state.pot.toLocaleString("pt-BR")}</span></span>
         <span>P/ PAGAR: <span className="text-pow-red">{toCall.toLocaleString("pt-BR")}</span></span>
       </div>
 
-      <div className="grid grid-cols-4 gap-1.5 md:gap-2">
+      <div className="grid grid-cols-4 gap-1.5 md:gap-2 landscape-short:gap-1 landscape-short:[&_button]:!py-1 landscape-short:[&_button]:!text-[11px]">
         <ComicButton variant="danger" size="sm" onClick={() => onAction({ type: "fold" })} disabled={disabled}>
           FOLD
         </ComicButton>
@@ -58,42 +58,42 @@ export function ActionPanel({ state, onAction, disabled }: Props) {
 
       {raiseAvailable && (
         <>
-          {/* Mobile: collapsible */}
+          {/* Mobile e landscape-short: collapsible */}
           <details
-            className="md:hidden"
+            className="md:hidden landscape-short:!block"
             open={openRaise}
             onToggle={(e) => setOpenRaise((e.target as HTMLDetailsElement).open)}
           >
-            <summary className="text-xs font-display cursor-pointer select-none flex justify-between items-center">
+            <summary className="text-xs landscape-short:text-[10px] font-display cursor-pointer select-none flex justify-between items-center">
               <span>Ajustar aposta</span>
               <span className="text-pow-red">{clamped.toLocaleString("pt-BR")}</span>
             </summary>
-            <div className="mt-2">
+            <div className="mt-2 landscape-short:mt-1">
               <Slider
                 min={minRaiseTotal} max={maxTotal} step={state.bigBlind}
                 value={[clamped]}
                 onValueChange={(v) => setRaise(v[0])}
                 disabled={disabled}
               />
-              <div className="flex gap-1 mt-2 flex-wrap">
+              <div className="flex gap-1 mt-2 landscape-short:mt-1 flex-wrap">
                 {[0.5, 0.75, 1, 1.5].map((mult) => {
                   const val = Math.min(maxTotal, Math.max(minRaiseTotal, human.currentBet + Math.floor(state.pot * mult)));
                   return (
                     <button key={mult}
-                      className="ink-border bg-muted px-2 py-0.5 text-xs font-bold hover:bg-pow-yellow"
+                      className="ink-border bg-muted px-2 py-0.5 text-xs landscape-short:text-[10px] font-bold hover:bg-pow-yellow"
                       onClick={() => setRaise(val)} disabled={disabled}>
                       {mult === 1 ? "POT" : `${mult}x`}
                     </button>
                   );
                 })}
-                <button className="ink-border bg-muted px-2 py-0.5 text-xs font-bold hover:bg-pow-yellow"
+                <button className="ink-border bg-muted px-2 py-0.5 text-xs landscape-short:text-[10px] font-bold hover:bg-pow-yellow"
                   onClick={() => setRaise(maxTotal)} disabled={disabled}>MAX</button>
               </div>
             </div>
           </details>
 
-          {/* Desktop: always open */}
-          <div className="hidden md:block">
+          {/* Desktop: always open (landscape-short usa a versão colapsável acima) */}
+          <div className="hidden md:block landscape-short:!hidden">
             <div className="flex justify-between text-xs font-body font-bold mb-1">
               <span>Aumentar para:</span>
               <span className="text-pow-red">{clamped.toLocaleString("pt-BR")}</span>
