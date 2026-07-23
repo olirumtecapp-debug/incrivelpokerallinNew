@@ -4,6 +4,7 @@ import heroBg from "@/assets/hero-bg.jpg";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { LandscapeHint } from "@/components/comic/LandscapeHint";
 import { FullscreenToggle } from "@/components/comic/FullscreenToggle";
+import { ThemeToggle } from "@/components/comic/ThemeToggle";
 
 
 export const Route = createFileRoute("/")({
