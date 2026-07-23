@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { VARIANT_LIST } from "@/lib/poker/variants";
 import { sfx } from "@/lib/audio/sfx";
+import { ThemeToggle } from "@/components/comic/ThemeToggle";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -50,6 +51,17 @@ function Settings() {
       </header>
 
       <main className="max-w-3xl mx-auto p-4 md:p-6 space-y-8">
+        <section>
+          <h2 className="font-display text-2xl mb-3">MODO</h2>
+          <div className="ink-border-thick hard-shadow-sm bg-card text-card-foreground p-4 rounded-lg flex items-center justify-between gap-3">
+            <div>
+              <div className="font-display text-lg">Claro / Escuro</div>
+              <div className="text-sm text-muted-foreground">Alterna o esquema global. Contrastes ajustados para AA.</div>
+            </div>
+            <ThemeToggle />
+          </div>
+        </section>
+
         <section>
           <h2 className="font-display text-2xl mb-3">TEMA DA MESA</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
