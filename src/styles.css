@@ -76,8 +76,8 @@
   --chip-green: oklch(0.55 0.16 150);
   --chip-black: oklch(0.15 0.02 40);
 
-  /* Semantic (light — modo HQ Clássico) */
-  --background: var(--paper);
+  /* Semantic (light — modo HQ Clássico rebalanceado) */
+  --background: oklch(0.99 0.005 85);
   --foreground: var(--ink);
   --card: oklch(1 0 0);
   --card-foreground: var(--ink);
@@ -87,14 +87,14 @@
   --primary-foreground: oklch(1 0 0);
   --secondary: var(--pow-yellow);
   --secondary-foreground: var(--ink);
-  --muted: oklch(0.94 0.01 85);
-  --muted-foreground: oklch(0.4 0.02 40);
+  --muted: oklch(0.95 0.008 85);
+  --muted-foreground: oklch(0.32 0.02 40);
   --accent: var(--pow-blue);
   --accent-foreground: oklch(1 0 0);
   --destructive: var(--pow-red);
   --destructive-foreground: oklch(1 0 0);
-  --border: var(--ink);
-  --input: oklch(0.9 0.01 85);
+  --border: oklch(0.2 0.02 40);
+  --input: oklch(0.86 0.01 85);
   --ring: var(--pow-red);
 }
 
