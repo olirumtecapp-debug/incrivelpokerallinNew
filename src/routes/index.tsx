@@ -68,6 +68,9 @@ function Home() {
           Incrível Poker All In · Feito em estilo HQ · v1.0
         </footer>
       </div>
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       <FullscreenToggle />
     </div>
   );
