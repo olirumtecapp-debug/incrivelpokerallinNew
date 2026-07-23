@@ -23,7 +23,8 @@ export function FullscreenToggle({ className }: { className?: string }) {
   }, []);
 
   useEffect(() => {
-    if (!isFs) return;
+    if (!isFs) { unlockOrientation(); return; }
+    lockLandscape();
     setShowHint(true);
     const t = setTimeout(() => setShowHint(false), 3000);
     return () => clearTimeout(t);
