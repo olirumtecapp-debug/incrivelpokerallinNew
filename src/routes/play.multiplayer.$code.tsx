@@ -339,21 +339,21 @@ function Room() {
   const winnerIds = new Set(gameState.winners.map((w) => w.playerId));
 
   return (
-    <div className="relative min-h-[100dvh] overflow-y-auto flex flex-col">
+    <div className="relative min-h-[100dvh] landscape-short:h-[100dvh] landscape-short:overflow-hidden overflow-y-auto flex flex-col">
       <ImpactText text={gameState.lastImpact?.text} ts={gameState.lastImpact?.ts} />
-      <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 ink-border-thick bg-card">
+      <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 landscape-short:py-0.5 landscape-short:px-2 ink-border-thick bg-card">
         <div className="flex min-w-0 items-center gap-2">
-          <Link to="/play/multiplayer" className="font-display text-base md:text-lg text-pow-red hover:text-ink shrink-0">← LOBBY</Link>
-          <span className="truncate font-display text-sm md:text-base">SALA {room.code}</span>
-          <span className="hidden md:inline ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
+          <Link to="/play/multiplayer" className="font-display text-base md:text-lg landscape-short:text-xs text-pow-red hover:text-ink shrink-0">← LOBBY</Link>
+          <span className="truncate font-display text-sm md:text-base landscape-short:text-xs">SALA {room.code}</span>
+          <span className="hidden md:inline landscape-short:!hidden ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
         </div>
-        <div className="font-body text-xs md:text-sm font-bold">Mão #{gameState.handNumber}</div>
+        <div className="font-body text-xs md:text-sm landscape-short:text-[10px] font-bold">Mão #{gameState.handNumber}</div>
       </header>
 
-      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2"
+      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 landscape-short:gap-0 px-2 py-1 md:px-4 md:py-2 landscape-short:px-1 landscape-short:py-0"
            style={{ background: "radial-gradient(ellipse at center, var(--color-felt) 0%, var(--color-felt-dark) 100%)" }}>
 
-        <div className="flex flex-wrap gap-1.5 md:gap-3 justify-center pt-1">
+        <div className="flex flex-wrap gap-1.5 md:gap-3 landscape-short:gap-1 justify-center pt-1 landscape-short:pt-0">
           {others.map((p) => {
             const idx = gameState.players.findIndex((x) => x.id === p.id);
             const pr = players.find((rp) => rp.guest_id === p.id);
