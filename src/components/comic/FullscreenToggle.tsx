@@ -51,7 +51,7 @@ export function FullscreenToggle({ className }: { className?: string }) {
   return (
     <div className={cn("fixed bottom-4 right-4 landscape-short:bottom-1 landscape-short:right-1 z-50 flex flex-col items-end gap-2", className)}>
       {isFs && showHint && (
-        <div className="ink-border bg-paper text-ink-fixed font-body text-xs px-2 py-1 hard-shadow-sm max-w-[180px] text-right">
+        <div className="ink-border bg-card text-card-foreground font-body text-xs px-2 py-1 hard-shadow-sm max-w-[180px] text-right">
           toque em SAIR para voltar
         </div>
       )}
