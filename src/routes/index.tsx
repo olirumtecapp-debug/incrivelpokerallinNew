@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
 
 const MODES = [
   { to: "/play/campaign", title: "CAMPANHA", subtitle: "Copa do Mundo de Poker HQ", color: "bg-pow-red text-white", emoji: "🏆" },
-  { to: "/play/casual", title: "CASUAL", subtitle: "Partida rápida contra a IA", color: "bg-pow-yellow text-ink", emoji: "🎲" },
+  { to: "/play/casual", title: "CASUAL", subtitle: "Partida rápida contra a IA", color: "bg-pow-yellow text-ink-fixed", emoji: "🎲" },
   { to: "/play/zen", title: "ZEN POKER", subtitle: "Modo relax, sem pressão", color: "bg-pow-blue text-white", emoji: "🧘" },
   { to: "/play/multiplayer", title: "MULTIPLAYER", subtitle: "Sala privada com amigos", color: "bg-felt text-white", emoji: "👥" },
 ] as const;
