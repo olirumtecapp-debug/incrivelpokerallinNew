@@ -46,22 +46,22 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
   const gameOver = state.players.filter((p) => p.stack > 0).length < 2 && state.awaitingAdvance;
 
   return (
-    <div className="relative min-h-[100dvh] overflow-y-auto flex flex-col">
+    <div className="relative min-h-[100dvh] landscape-short:h-[100dvh] landscape-short:overflow-hidden overflow-y-auto flex flex-col">
       <ImpactText text={state.lastImpact?.text} ts={state.lastImpact?.ts} />
 
-      <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 ink-border-thick bg-card">
+      <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 landscape-short:py-0.5 landscape-short:px-2 ink-border-thick bg-card">
         <div className="flex min-w-0 items-center gap-2">
-          <Link to="/" className="font-display text-base md:text-lg text-pow-red hover:text-ink shrink-0" onClick={() => sfx.play("click")}>← MENU</Link>
-          <span className="truncate font-display text-sm md:text-base">{modeLabel}</span>
-          <span className="hidden md:inline ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
+          <Link to="/" className="font-display text-base md:text-lg landscape-short:text-xs text-pow-red hover:text-ink shrink-0" onClick={() => sfx.play("click")}>← MENU</Link>
+          <span className="truncate font-display text-sm md:text-base landscape-short:text-xs">{modeLabel}</span>
+          <span className="hidden md:inline landscape-short:!hidden ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
         </div>
-        <div className="font-body text-xs md:text-sm font-bold">Mão #{state.handNumber}</div>
+        <div className="font-body text-xs md:text-sm landscape-short:text-[10px] font-bold">Mão #{state.handNumber}</div>
       </header>
 
-      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-2"
+      <div className="flex-1 min-h-0 relative grid grid-rows-[auto_1fr_auto] items-center justify-items-center gap-1 md:gap-2 landscape-short:gap-0 px-2 py-1 md:px-4 md:py-2 landscape-short:px-1 landscape-short:py-0"
            style={{ background: "radial-gradient(ellipse at center, var(--color-felt) 0%, var(--color-felt-dark) 100%)" }}>
 
-        <div className="pt-1">
+        <div className="pt-1 landscape-short:pt-0">
           <PlayerSeat
             player={bot}
             isActive={state.actionIdx === botIdx && !state.awaitingAdvance}
@@ -73,17 +73,17 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
           />
         </div>
 
-        <div className="flex flex-col items-center gap-1 md:gap-2 w-full max-w-4xl relative">
-          <div className="ink-border-thick hard-shadow bg-paper/90 rounded-full px-3 py-0.5 md:px-5 md:py-1.5">
-            <div className="font-display text-base md:text-2xl text-pow-red text-center leading-tight">
+        <div className="flex flex-col items-center gap-1 md:gap-2 landscape-short:gap-0.5 w-full max-w-4xl relative">
+          <div className="ink-border-thick hard-shadow bg-paper/90 rounded-full px-3 py-0.5 md:px-5 md:py-1.5 landscape-short:px-2 landscape-short:py-0">
+            <div className="font-display text-base md:text-2xl landscape-short:text-xs text-pow-red text-center leading-tight">
               POT: {state.pot.toLocaleString("pt-BR")}
             </div>
           </div>
           <div className="w-full overflow-x-auto">
-            <div className="flex gap-1 md:gap-2 items-center justify-center flex-nowrap min-w-max mx-auto px-1">
+            <div className="flex gap-1 md:gap-2 landscape-short:gap-0.5 items-center justify-center flex-nowrap min-w-max mx-auto px-1">
               {[0, 1, 2, 3, 4].map((i) => {
                 const c = state.community[i];
-                if (!c) return <div key={i} className="shrink-0 w-10 h-14 sm:w-14 sm:h-20 md:w-16 md:h-24 lg:w-20 lg:h-28 rounded-md border-2 border-dashed border-white/30" />;
+                if (!c) return <div key={i} className="shrink-0 w-10 h-14 sm:w-14 sm:h-20 md:w-16 md:h-24 lg:w-20 lg:h-28 landscape-short:w-8 landscape-short:h-11 rounded-md border-2 border-dashed border-white/30" />;
                 return <PlayingCard key={i} card={c} size="md" dealDelay={i * 80} />;
               })}
             </div>
@@ -93,7 +93,7 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
           )}
         </div>
 
-        <div className="pb-1 min-h-[140px] md:min-h-[170px] flex items-end">
+        <div className="pb-1 landscape-short:pb-0 min-h-[140px] md:min-h-[170px] landscape-short:min-h-0 flex items-end">
           <PlayerSeat
             player={human}
             isActive={state.actionIdx === humanIdx && !state.awaitingAdvance}
@@ -107,7 +107,8 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
       </div>
 
 
-      <div className="shrink-0 relative z-10 bg-background p-2 md:p-3 short:py-1.5">
+      <div className="shrink-0 relative z-10 bg-background p-2 md:p-3 short:py-1.5 landscape-short:p-1">
+
         {gameOver ? (
           <div className="ink-border-thick hard-shadow bg-card rounded-lg p-4 md:p-6 text-center max-w-3xl mx-auto">
             <h2 className="font-display text-2xl md:text-3xl mb-3">
