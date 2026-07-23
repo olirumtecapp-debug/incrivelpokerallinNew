@@ -372,17 +372,17 @@ function Room() {
           })}
         </div>
 
-        <div className="flex flex-col items-center gap-1 md:gap-2 w-full max-w-4xl">
-          <div className="ink-border-thick hard-shadow bg-paper/90 rounded-full px-3 py-0.5 md:px-5 md:py-1.5">
-            <div className="font-display text-base md:text-2xl text-pow-red text-center leading-tight">
+        <div className="flex flex-col items-center gap-1 md:gap-2 landscape-short:gap-0.5 w-full max-w-4xl">
+          <div className="ink-border-thick hard-shadow bg-paper/90 rounded-full px-3 py-0.5 md:px-5 md:py-1.5 landscape-short:px-2 landscape-short:py-0">
+            <div className="font-display text-base md:text-2xl landscape-short:text-xs text-pow-red text-center leading-tight">
               POT: {gameState.pot.toLocaleString("pt-BR")}
             </div>
           </div>
           <div className="w-full overflow-x-auto">
-            <div className="flex gap-1 md:gap-2 items-center justify-center flex-nowrap min-w-max mx-auto px-1">
+            <div className="flex gap-1 md:gap-2 landscape-short:gap-0.5 items-center justify-center flex-nowrap min-w-max mx-auto px-1">
               {[0, 1, 2, 3, 4].map((i) => {
                 const c = gameState.community[i];
-                if (!c) return <div key={i} className="shrink-0 w-10 h-14 sm:w-14 sm:h-20 md:w-16 md:h-24 lg:w-20 lg:h-28 rounded-md border-2 border-dashed border-white/30" />;
+                if (!c) return <div key={i} className="shrink-0 w-10 h-14 sm:w-14 sm:h-20 md:w-16 md:h-24 lg:w-20 lg:h-28 landscape-short:w-8 landscape-short:h-11 rounded-md border-2 border-dashed border-white/30" />;
                 return <PlayingCard key={i} card={c} size="md" dealDelay={i * 60} />;
               })}
             </div>
@@ -390,7 +390,7 @@ function Room() {
         </div>
 
         {me && (
-          <div className="pb-1 min-h-[140px] md:min-h-[170px] flex items-end">
+          <div className="pb-1 landscape-short:pb-0 min-h-[140px] md:min-h-[170px] landscape-short:min-h-0 flex items-end">
             <PlayerSeat
               player={me}
               isActive={meIdx === gameState.actionIdx && !gameState.awaitingAdvance}
@@ -406,7 +406,8 @@ function Room() {
       </div>
 
 
-      <div className="shrink-0 relative z-10 bg-background p-2 md:p-3 short:py-1.5">
+      <div className="shrink-0 relative z-10 bg-background p-2 md:p-3 short:py-1.5 landscape-short:p-1">
+
         {gameState.awaitingAdvance ? (
           <div className="ink-border-thick hard-shadow bg-card rounded-lg p-2 md:p-3 flex flex-col items-center gap-1 max-w-3xl mx-auto">
             {gameState.winners.map((w, i) => {
