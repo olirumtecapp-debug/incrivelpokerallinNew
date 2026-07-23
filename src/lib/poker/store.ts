@@ -122,7 +122,10 @@ export const usePokerStore = create<PokerStore>((set, get) => ({
       if (taunts) {
         if (decision.type === "fold") tauntText = pick(taunts.fold);
         else if (decision.type === "allin") tauntText = pick(taunts.allIn);
-        else if (Math.random() < 0.3) tauntText = pick(taunts.win);
+        else if (decision.type === "raise" && Math.random() < 0.55) tauntText = pick([...taunts.win, ...RAISE_CHATTER]);
+        else if (decision.type === "call" && Math.random() < 0.35) tauntText = pick(CALL_CHATTER);
+        else if (decision.type === "check" && Math.random() < 0.3) tauntText = pick(CHECK_CHATTER);
+        else if (Math.random() < 0.15) tauntText = pick(IDLE_CHATTER);
       }
       set({
         state: next, botThinking: false,
@@ -134,3 +137,21 @@ export const usePokerStore = create<PokerStore>((set, get) => ({
 }));
 
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// Falas leves, divertidas e sem ofensas — usadas para deixar a mesa mais viva.
+const RAISE_CHATTER = [
+  "Bora aumentar!", "Subo mais um pouquinho 😎", "Tá quente essa mão!",
+  "Vou dar uma esquentada!", "Aposta na mesa!", "Aumenta aí!",
+];
+const CALL_CHATTER = [
+  "Vou nessa!", "Pago pra ver.", "Curioso, curioso...",
+  "Tô dentro!", "Bora ver o que vem.", "Aceito o desafio!",
+];
+const CHECK_CHATTER = [
+  "Passo a vez.", "Só olhando 👀", "Vou esperar.",
+  "Segura essa.", "Vamos com calma.", "Tudo tranquilo.",
+];
+const IDLE_CHATTER = [
+  "Cartas boas hoje!", "Que jogo bom!", "Tô me divertindo!",
+  "Mesa animada!", "Boa partida!", "Vamos que vamos!",
+];

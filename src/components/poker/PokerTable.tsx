@@ -5,6 +5,7 @@ import { PlayerSeat } from "./PlayerSeat";
 import { ActionPanel } from "./ActionPanel";
 import { ImpactText } from "@/components/comic/ImpactText";
 import { ComicButton } from "@/components/comic/ComicButton";
+import { LandscapeHint } from "@/components/comic/LandscapeHint";
 import { Link } from "@tanstack/react-router";
 import type { Difficulty } from "@/lib/poker/ai";
 import type { VariantId } from "@/lib/poker/variants";
@@ -47,6 +48,7 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
 
   return (
     <div className="relative min-h-[100dvh] landscape-short:h-[100dvh] landscape-short:overflow-hidden overflow-y-auto flex flex-col">
+      <LandscapeHint blocking />
       <ImpactText text={state.lastImpact?.text} ts={state.lastImpact?.ts} />
 
       <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 landscape-short:py-0.5 landscape-short:px-2 ink-border-thick bg-card">

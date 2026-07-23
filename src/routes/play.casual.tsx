@@ -5,6 +5,7 @@ import { PERSONALITIES } from "@/lib/poker/ai";
 import { VARIANT_LIST, type VariantId } from "@/lib/poker/variants";
 import { PokerTable } from "@/components/poker/PokerTable";
 import { ComicButton } from "@/components/comic/ComicButton";
+import { AvatarBadge } from "@/components/multiplayer/AvatarPicker";
 import { sfx } from "@/lib/audio/sfx";
 
 export const Route = createFileRoute("/play/casual")({
@@ -63,7 +64,9 @@ function CasualPage() {
               className="ink-border-thick hard-shadow bg-card rounded-lg p-4 text-left transition-transform hover:-translate-y-1 hover:-translate-x-1"
             >
               <div className="flex items-center gap-3">
-                <div className={`${p.avatarBg} ink-border-thick w-16 h-16 rounded-full flex items-center justify-center text-4xl shrink-0`}>{p.emoji}</div>
+                <div className={`${p.avatarBg} ink-border-thick w-16 h-16 rounded-full flex items-center justify-center shrink-0 overflow-hidden`}>
+                  <AvatarBadge avatarId={p.avatarId} size={60} className="!border-0" />
+                </div>
                 <div className="min-w-0 flex-1">
                   <div className="font-display text-2xl truncate">{p.name}</div>
                   <div className="text-sm font-bold text-pow-red">{p.title}</div>

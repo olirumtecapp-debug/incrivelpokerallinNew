@@ -10,6 +10,7 @@ import { PlayingCard } from "@/components/poker/PlayingCard";
 import { ActionPanel } from "@/components/poker/ActionPanel";
 import { ImpactText } from "@/components/comic/ImpactText";
 import { ComicButton } from "@/components/comic/ComicButton";
+import { LandscapeHint } from "@/components/comic/LandscapeHint";
 import { toast } from "sonner";
 import { sfx } from "@/lib/audio/sfx";
 import { getGuestId, getGuestName, getGuestAvatarId, setGuestName, setGuestAvatarId } from "@/lib/guest";
@@ -340,6 +341,7 @@ function Room() {
 
   return (
     <div className="relative min-h-[100dvh] landscape-short:h-[100dvh] landscape-short:overflow-hidden overflow-y-auto flex flex-col">
+      <LandscapeHint blocking />
       <ImpactText text={gameState.lastImpact?.text} ts={gameState.lastImpact?.ts} />
       <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 landscape-short:py-0.5 landscape-short:px-2 ink-border-thick bg-card">
         <div className="flex min-w-0 items-center gap-2">

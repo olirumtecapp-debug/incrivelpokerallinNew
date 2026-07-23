@@ -71,7 +71,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "screen-orientation", content: "landscape" },
+      { name: "x5-orientation", content: "landscape" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
       { title: "Incrível Poker All In — Poker HQ Pop Art" },
       { name: "description", content: "Jogue Texas Hold'em com visual de história em quadrinhos. Modo Campanha, Casual, Zen e Multiplayer." },
       { name: "author", content: "Incrível Poker" },
