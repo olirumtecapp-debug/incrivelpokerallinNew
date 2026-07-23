@@ -55,7 +55,7 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
         <div className="flex min-w-0 items-center gap-2">
           <Link to="/" className="font-display text-base md:text-lg landscape-short:text-xs text-pow-red hover:text-ink shrink-0" onClick={() => sfx.play("click")}>← MENU</Link>
           <span className="truncate font-display text-sm md:text-base landscape-short:text-xs">{modeLabel}</span>
-          <span className="hidden md:inline landscape-short:!hidden ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
+          <span className="hidden md:inline landscape-short:!hidden ink-border bg-pow-yellow text-ink-fixed px-2 py-0.5 text-xs font-display">{v.short}</span>
         </div>
         <div className="font-body text-xs md:text-sm landscape-short:text-[10px] font-bold">Mão #{state.handNumber}</div>
       </header>
@@ -91,7 +91,7 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
             </div>
           </div>
           {botThinking && (
-            <div className="absolute -top-1 right-2 ink-border bg-white/90 text-ink font-display text-xs px-2 py-0.5 rounded animate-pulse">🤔</div>
+            <div className="absolute -top-1 right-2 ink-border bg-white/90 text-ink-fixed font-display text-xs px-2 py-0.5 rounded animate-pulse">🤔</div>
           )}
         </div>
 

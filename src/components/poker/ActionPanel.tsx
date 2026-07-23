@@ -80,13 +80,13 @@ export function ActionPanel({ state, onAction, disabled }: Props) {
                   const val = Math.min(maxTotal, Math.max(minRaiseTotal, human.currentBet + Math.floor(state.pot * mult)));
                   return (
                     <button key={mult}
-                      className="ink-border bg-muted px-2 py-0.5 text-xs landscape-short:text-[10px] font-bold hover:bg-pow-yellow"
+                      className="ink-border bg-muted px-2 py-0.5 text-xs landscape-short:text-[10px] font-bold hover:bg-pow-yellow hover:text-ink-fixed"
                       onClick={() => setRaise(val)} disabled={disabled}>
                       {mult === 1 ? "POT" : `${mult}x`}
                     </button>
                   );
                 })}
-                <button className="ink-border bg-muted px-2 py-0.5 text-xs landscape-short:text-[10px] font-bold hover:bg-pow-yellow"
+                <button className="ink-border bg-muted px-2 py-0.5 text-xs landscape-short:text-[10px] font-bold hover:bg-pow-yellow hover:text-ink-fixed"
                   onClick={() => setRaise(maxTotal)} disabled={disabled}>MAX</button>
               </div>
             </div>
@@ -109,13 +109,13 @@ export function ActionPanel({ state, onAction, disabled }: Props) {
                 const val = Math.min(maxTotal, Math.max(minRaiseTotal, human.currentBet + Math.floor(state.pot * mult)));
                 return (
                   <button key={mult}
-                    className="ink-border bg-muted px-2 py-0.5 text-xs font-bold hover:bg-pow-yellow"
+                    className="ink-border bg-muted px-2 py-0.5 text-xs font-bold hover:bg-pow-yellow hover:text-ink-fixed"
                     onClick={() => setRaise(val)} disabled={disabled}>
                     {mult === 1 ? "POT" : `${mult}x pot`}
                   </button>
                 );
               })}
-              <button className="ink-border bg-muted px-2 py-0.5 text-xs font-bold hover:bg-pow-yellow"
+              <button className="ink-border bg-muted px-2 py-0.5 text-xs font-bold hover:bg-pow-yellow hover:text-ink-fixed"
                 onClick={() => setRaise(maxTotal)} disabled={disabled}>MAX</button>
             </div>
           </div>

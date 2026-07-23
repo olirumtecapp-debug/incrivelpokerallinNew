@@ -30,7 +30,7 @@ function CasualPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="ink-border-thick bg-pow-yellow p-4 flex items-center gap-3">
+      <header className="ink-border-thick bg-pow-yellow text-ink-fixed p-4 flex items-center gap-3">
         <Link to="/" className="font-display text-xl shrink-0">← MENU</Link>
         <h1 className="font-display text-2xl md:text-3xl truncate">🎲 CASUAL</h1>
       </header>
@@ -43,7 +43,7 @@ function CasualPage() {
             <button
               key={v.id}
               onClick={() => { sfx.unlock(); sfx.play("click"); setVariant(v.id); }}
-              className={`ink-border-thick hard-shadow-sm rounded-lg p-4 text-left transition-transform hover:-translate-y-1 ${variant === v.id ? "bg-pow-yellow" : "bg-card"}`}
+              className={`ink-border-thick hard-shadow-sm rounded-lg p-4 text-left transition-transform hover:-translate-y-1 ${variant === v.id ? "bg-pow-yellow text-ink-fixed" : "bg-card"}`}
             >
               <div className="text-3xl mb-1">{v.emoji}</div>
               <div className="font-display text-lg">{v.name}</div>

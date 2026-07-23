@@ -41,7 +41,7 @@ export function PlayingCard({ card, faceDown, size = "md", dealDelay = 0, highli
         "relative ink-border-thick rounded-md bg-white flex flex-col items-center justify-center animate-card-deal font-display leading-none",
         sizeMap[size],
         highlighted && "ring-4 ring-pow-yellow ring-offset-2 ring-offset-transparent",
-        red ? "text-pow-red" : "text-ink",
+        red ? "text-pow-red" : "text-ink-fixed",
       )}
       style={{ animationDelay: `${dealDelay}ms` }}
     >

@@ -40,7 +40,7 @@ const RULES = [
 function Tutorial() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="ink-border-thick bg-pow-yellow p-4 flex items-center gap-3">
+      <header className="ink-border-thick bg-pow-yellow text-ink-fixed p-4 flex items-center gap-3">
         <Link to="/" className="font-display text-xl shrink-0">← MENU</Link>
         <h1 className="font-display text-2xl md:text-3xl truncate">📖 COMO JOGAR</h1>
       </header>
@@ -70,7 +70,7 @@ function Tutorial() {
           <div className="space-y-2">
             {HANDS.map((h, i) => (
               <div key={h.rank} className="ink-border hard-shadow-sm bg-card rounded-md p-3 flex items-center gap-4">
-                <div className="ink-border bg-pow-yellow font-display text-2xl w-12 h-12 flex items-center justify-center shrink-0">
+                <div className="ink-border bg-pow-yellow text-ink-fixed font-display text-2xl w-12 h-12 flex items-center justify-center shrink-0">
                   {HANDS.length - i}
                 </div>
                 <div className="min-w-0 flex-1">

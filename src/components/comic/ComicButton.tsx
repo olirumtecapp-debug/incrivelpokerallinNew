@@ -11,10 +11,10 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClass: Record<Variant, string> = {
-  primary: "bg-pow-yellow text-ink",
-  secondary: "bg-white text-ink",
+  primary: "bg-pow-yellow text-ink-fixed",
+  secondary: "bg-white text-ink-fixed",
   danger: "bg-pow-red text-white",
-  ghost: "bg-transparent text-ink",
+  ghost: "bg-transparent text-ink-fixed dark:text-foreground",
   allin: "halftone-red text-white",
 };
 

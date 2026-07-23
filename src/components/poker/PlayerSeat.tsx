@@ -46,8 +46,8 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
 
       <div className={cn(
         "ink-border-thick hard-shadow-sm bg-card px-2 py-1 md:px-3 md:py-1.5 landscape-short:px-1.5 landscape-short:py-0.5 min-w-[110px] md:min-w-[140px] landscape-short:!min-w-[90px] text-center rounded-md",
-        isActive && "bg-pow-yellow scale-105 transition-transform",
-        isWinner && "bg-pow-yellow",
+        isActive && "bg-pow-yellow text-ink-fixed scale-105 transition-transform",
+        isWinner && "bg-pow-yellow text-ink-fixed",
       )}>
         <div className="flex items-center justify-center gap-1.5 landscape-short:gap-1">
           {avatarId ? (
@@ -59,7 +59,7 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
           )}
           <div className="font-display text-sm md:text-base landscape-short:text-xs truncate">{player.name}</div>
           {isDealer && (
-            <span className="ink-border bg-white text-ink text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">D</span>
+            <span className="ink-border bg-white text-ink-fixed text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">D</span>
           )}
         </div>
         <div className="font-body font-bold text-xs landscape-short:text-[10px] text-muted-foreground">

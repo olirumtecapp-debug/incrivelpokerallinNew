@@ -11,7 +11,7 @@ export function SpeechBubble({ children, className, tail = "bottom-left" }: Prop
   return (
     <div
       className={cn(
-        "relative inline-block bg-white ink-border-thick hard-shadow-sm rounded-2xl px-4 py-2 font-body font-bold text-ink animate-bubble-pop",
+        "relative inline-block bg-white ink-border-thick hard-shadow-sm rounded-2xl px-4 py-2 font-body font-bold text-ink-fixed animate-bubble-pop",
         className,
       )}
     >

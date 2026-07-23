@@ -38,7 +38,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       className={cn(
         "ink-border-thick hard-shadow-sm font-display tracking-wide px-3 py-2 text-sm transition-all",
         "active:translate-x-[3px] active:translate-y-[3px] active:shadow-none",
-        mode === "dark" ? "bg-pow-yellow text-ink" : "bg-ink text-paper",
+        mode === "dark" ? "bg-pow-yellow text-ink-fixed" : "bg-ink text-paper",
         className,
       )}
     >

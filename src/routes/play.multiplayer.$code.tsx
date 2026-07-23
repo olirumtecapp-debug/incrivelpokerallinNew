@@ -232,7 +232,7 @@ function Room() {
               onChange={(e) => setNameInput(e.target.value)}
               placeholder="Seu apelido"
               maxLength={20}
-              className="ink-border-thick bg-white px-3 py-2 font-display text-xl flex-1"
+              className="ink-border-thick bg-white text-ink-fixed px-3 py-2 font-display text-xl flex-1"
             />
           </div>
           <div className="text-xs font-bold uppercase tracking-wide">Escolha seu personagem</div>
@@ -276,11 +276,11 @@ function Room() {
 
             <ul className="space-y-2">
               {players.map((p) => (
-                <li key={p.id} className="ink-border bg-white p-2 rounded flex items-center gap-3">
+                <li key={p.id} className="ink-border bg-white text-ink-fixed p-2 rounded flex items-center gap-3">
                   <AvatarBadge avatarId={p.avatar_emoji} size={40} />
                   <span className="font-display flex-1 truncate">{p.display_name}</span>
-                  {p.guest_id === hostGuestId && <span className="text-xs ink-border bg-pow-yellow px-2 py-0.5 font-display">HOST</span>}
-                  <span className={`text-xs font-display px-2 py-0.5 ink-border ${p.is_ready ? "bg-pow-yellow" : "bg-muted"}`}>
+                  {p.guest_id === hostGuestId && <span className="text-xs ink-border bg-pow-yellow text-ink-fixed px-2 py-0.5 font-display">HOST</span>}
+                  <span className={`text-xs font-display px-2 py-0.5 ink-border ${p.is_ready ? "bg-pow-yellow text-ink-fixed" : "bg-muted"}`}>
                     {p.is_ready ? "PRONTO" : "aguardando"}
                   </span>
                 </li>
@@ -297,7 +297,7 @@ function Room() {
               <div className="flex gap-2 justify-center flex-wrap">
                 <button
                   onClick={() => { navigator.clipboard?.writeText(room.code); toast.success("Código copiado!"); }}
-                  className="ink-border bg-white px-3 py-1 font-display text-sm hover:bg-pow-yellow"
+                  className="ink-border bg-white text-ink-fixed px-3 py-1 font-display text-sm hover:bg-pow-yellow hover:text-ink-fixed"
                 >📋 CÓDIGO</button>
                 <button
                   onClick={() => {
@@ -305,7 +305,7 @@ function Room() {
                     navigator.clipboard?.writeText(url);
                     toast.success("Link copiado!");
                   }}
-                  className="ink-border bg-white px-3 py-1 font-display text-sm hover:bg-pow-yellow"
+                  className="ink-border bg-white text-ink-fixed px-3 py-1 font-display text-sm hover:bg-pow-yellow hover:text-ink-fixed"
                 >🔗 LINK</button>
               </div>
             </div>
@@ -345,9 +345,9 @@ function Room() {
       <ImpactText text={gameState.lastImpact?.text} ts={gameState.lastImpact?.ts} />
       <header className="shrink-0 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 py-1.5 md:py-2 landscape-short:py-0.5 landscape-short:px-2 ink-border-thick bg-card">
         <div className="flex min-w-0 items-center gap-2">
-          <Link to="/play/multiplayer" className="font-display text-base md:text-lg landscape-short:text-xs text-pow-red hover:text-ink shrink-0">← LOBBY</Link>
+          <Link to="/play/multiplayer" className="font-display text-base md:text-lg landscape-short:text-xs text-pow-red hover:text-ink-fixed shrink-0">← LOBBY</Link>
           <span className="truncate font-display text-sm md:text-base landscape-short:text-xs">SALA {room.code}</span>
-          <span className="hidden md:inline landscape-short:!hidden ink-border bg-pow-yellow px-2 py-0.5 text-xs font-display">{v.short}</span>
+          <span className="hidden md:inline landscape-short:!hidden ink-border bg-pow-yellow text-ink-fixed px-2 py-0.5 text-xs font-display">{v.short}</span>
         </div>
         <div className="font-body text-xs md:text-sm landscape-short:text-[10px] font-bold">Mão #{gameState.handNumber}</div>
       </header>

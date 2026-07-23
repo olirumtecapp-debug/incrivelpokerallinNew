@@ -76,7 +76,7 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="ink-border-thick bg-pow-yellow p-4 flex items-center gap-3">
+      <header className="ink-border-thick bg-pow-yellow text-ink-fixed p-4 flex items-center gap-3">
         <Link to="/" className="font-display text-xl shrink-0">← MENU</Link>
         <h1 className="font-display text-2xl md:text-3xl truncate">🔑 ENTRAR</h1>
       </header>
@@ -86,11 +86,11 @@ function AuthPage() {
           <div className="flex gap-2 mb-5">
             <button
               onClick={() => setMode("signin")}
-              className={`flex-1 ink-border font-display py-2 rounded ${mode === "signin" ? "bg-pow-yellow" : "bg-white"}`}
+              className={`flex-1 ink-border font-display py-2 rounded ${mode === "signin" ? "bg-pow-yellow text-ink-fixed" : "bg-white text-ink-fixed"}`}
             >ENTRAR</button>
             <button
               onClick={() => setMode("signup")}
-              className={`flex-1 ink-border font-display py-2 rounded ${mode === "signup" ? "bg-pow-yellow" : "bg-white"}`}
+              className={`flex-1 ink-border font-display py-2 rounded ${mode === "signup" ? "bg-pow-yellow text-ink-fixed" : "bg-white text-ink-fixed"}`}
             >CRIAR CONTA</button>
           </div>
 
@@ -101,7 +101,7 @@ function AuthPage() {
                 <input
                   type="text" value={username} onChange={(e) => setUsername(e.target.value)}
                   placeholder="Seu nick no jogo" maxLength={30}
-                  className="w-full ink-border bg-white px-3 py-2 rounded font-body"
+                  className="w-full ink-border bg-white text-ink-fixed px-3 py-2 rounded font-body"
                 />
               </div>
             )}
@@ -110,7 +110,7 @@ function AuthPage() {
               <input
                 type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 required autoComplete="email"
-                className="w-full ink-border bg-white px-3 py-2 rounded font-body"
+                className="w-full ink-border bg-white text-ink-fixed px-3 py-2 rounded font-body"
               />
             </div>
             <div>
@@ -118,7 +118,7 @@ function AuthPage() {
               <input
                 type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 required minLength={6} autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                className="w-full ink-border bg-white px-3 py-2 rounded font-body"
+                className="w-full ink-border bg-white text-ink-fixed px-3 py-2 rounded font-body"
               />
             </div>
             <ComicButton type="submit" variant="primary" disabled={busy} className="w-full">
@@ -135,7 +135,7 @@ function AuthPage() {
           <button
             onClick={handleGoogle}
             disabled={busy}
-            className="w-full ink-border-thick hard-shadow-sm bg-white hover:bg-pow-yellow px-4 py-3 rounded font-display text-lg flex items-center justify-center gap-2 transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+            className="w-full ink-border-thick hard-shadow-sm bg-white text-ink-fixed hover:bg-pow-yellow px-4 py-3 rounded font-display text-lg flex items-center justify-center gap-2 transition-transform hover:-translate-y-0.5 disabled:opacity-50"
           >
             <span className="text-xl">🔍</span> ENTRAR COM GOOGLE
           </button>

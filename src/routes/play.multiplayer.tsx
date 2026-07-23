@@ -109,7 +109,7 @@ function Lobby() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Como te chamam?"
                 maxLength={20}
-                className="w-full ink-border-thick bg-white px-3 py-2 font-display text-xl"
+                className="w-full ink-border-thick bg-white text-ink-fixed px-3 py-2 font-display text-xl"
               />
               <div className="mt-1 text-xs text-muted-foreground font-display">
                 {currentAvatar.name}
@@ -125,7 +125,7 @@ function Lobby() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
             {VARIANT_LIST.map((v) => (
               <button key={v.id} onClick={() => setVariant(v.id)}
-                className={`ink-border p-3 rounded text-left transition ${variant === v.id ? "bg-pow-yellow" : "bg-white hover:bg-muted"}`}>
+                className={`ink-border p-3 rounded text-left transition ${variant === v.id ? "bg-pow-yellow text-ink-fixed" : "bg-white text-ink-fixed hover:bg-muted"}`}>
                 <div className="text-2xl">{v.emoji}</div>
                 <div className="font-display">{v.name}</div>
               </button>
@@ -136,13 +136,13 @@ function Lobby() {
               SB
               <input type="number" min={1} max={1000} value={smallBlind}
                 onChange={(e) => setSmallBlind(parseInt(e.target.value) || 10)}
-                className="w-full ink-border bg-white px-2 py-1 rounded font-mono" />
+                className="w-full ink-border bg-white text-ink-fixed px-2 py-1 rounded font-mono" />
             </label>
             <label className="text-sm font-bold">
               BB
               <input type="number" min={2} max={2000} value={bigBlind}
                 onChange={(e) => setBigBlind(parseInt(e.target.value) || 20)}
-                className="w-full ink-border bg-white px-2 py-1 rounded font-mono" />
+                className="w-full ink-border bg-white text-ink-fixed px-2 py-1 rounded font-mono" />
             </label>
           </div>
           <div className="mb-4">
@@ -154,7 +154,7 @@ function Lobby() {
                   type="button"
                   onClick={() => setMaxPlayers(n)}
                   className={`ink-border px-3 py-1.5 font-display text-lg rounded ${
-                    maxPlayers === n ? "bg-pow-yellow" : "bg-white hover:bg-muted"
+                    maxPlayers === n ? "bg-pow-yellow text-ink-fixed" : "bg-white text-ink-fixed hover:bg-muted"
                   }`}
                 >
                   {n}
@@ -178,7 +178,7 @@ function Lobby() {
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
               placeholder="PKR-XXXX"
-              className="ink-border-thick bg-white px-3 py-2 font-display text-2xl text-center flex-1 tracking-widest uppercase"
+              className="ink-border-thick bg-white text-ink-fixed px-3 py-2 font-display text-2xl text-center flex-1 tracking-widest uppercase"
               maxLength={8}
             />
             <ComicButton variant="primary" onClick={handleJoin} disabled={busy || joinCode.length < 6}>
@@ -187,7 +187,7 @@ function Lobby() {
           </div>
         </section>
 
-        <div className="ink-border hard-shadow-sm bg-pow-yellow rounded p-3 text-sm">
+        <div className="ink-border hard-shadow-sm bg-pow-yellow text-ink-fixed rounded p-3 text-sm">
           <b>ℹ Aviso:</b> jogo entre amigos, sem cadastro. Qualquer um com o código entra na sala.
         </div>
       </main>

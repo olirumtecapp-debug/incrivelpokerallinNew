@@ -17,7 +17,7 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <div className="halftone-yellow ink-border-thick hard-shadow-lg mx-auto mb-6 inline-block px-8 py-4 -rotate-2">
-          <h1 className="font-display text-7xl text-ink">404!</h1>
+          <h1 className="font-display text-7xl text-ink-fixed">404!</h1>
         </div>
         <h2 className="font-display mt-4 text-2xl">Página fora do baralho</h2>
         <p className="mt-2 text-muted-foreground">Essa mão não existe. Volta pra mesa!</p>
@@ -51,13 +51,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
             onClick={() => { router.invalidate(); reset(); }}
-            className="ink-border-thick hard-shadow bg-pow-yellow px-5 py-2 font-display text-xl text-ink transition-transform hover:-translate-y-1 hover:-translate-x-1"
+            className="ink-border-thick hard-shadow bg-pow-yellow px-5 py-2 font-display text-xl text-ink-fixed transition-transform hover:-translate-y-1 hover:-translate-x-1"
           >
             TENTAR DE NOVO
           </button>
           <a
             href="/"
-            className="ink-border-thick hard-shadow bg-white px-5 py-2 font-display text-xl text-ink transition-transform hover:-translate-y-1 hover:-translate-x-1"
+            className="ink-border-thick hard-shadow bg-white px-5 py-2 font-display text-xl text-ink-fixed transition-transform hover:-translate-y-1 hover:-translate-x-1"
           >
             IR PRA HOME
           </a>
