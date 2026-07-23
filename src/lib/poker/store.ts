@@ -137,3 +137,21 @@ export const usePokerStore = create<PokerStore>((set, get) => ({
 }));
 
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// Falas leves, divertidas e sem ofensas — usadas para deixar a mesa mais viva.
+const RAISE_CHATTER = [
+  "Bora aumentar!", "Subo mais um pouquinho 😎", "Tá quente essa mão!",
+  "Vou dar uma esquentada!", "Aposta na mesa!", "Aumenta aí!",
+];
+const CALL_CHATTER = [
+  "Vou nessa!", "Pago pra ver.", "Curioso, curioso...",
+  "Tô dentro!", "Bora ver o que vem.", "Aceito o desafio!",
+];
+const CHECK_CHATTER = [
+  "Passo a vez.", "Só olhando 👀", "Vou esperar.",
+  "Segura essa.", "Vamos com calma.", "Tudo tranquilo.",
+];
+const IDLE_CHATTER = [
+  "Cartas boas hoje!", "Que jogo bom!", "Tô me divertindo!",
+  "Mesa animada!", "Boa partida!", "Vamos que vamos!",
+];
