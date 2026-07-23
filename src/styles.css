@@ -56,6 +56,11 @@
   --color-chip-green: var(--chip-green);
   --color-chip-black: var(--chip-black);
 
+  /* Cores fixas — não flipam entre light/dark. Usar em textos sobre fundos
+     fixos (amarelo, branco, paper claro) para garantir legibilidade. */
+  --color-ink-fixed: oklch(0.12 0.02 40);
+  --color-paper-fixed: oklch(0.98 0.015 85);
+
   --font-display: "Bangers", "Impact", cursive;
   --font-body: "Nunito", "Inter", system-ui, sans-serif;
 }
