@@ -43,7 +43,7 @@ function CasualPage() {
             <button
               key={v.id}
               onClick={() => { sfx.unlock(); sfx.play("click"); setVariant(v.id); }}
-              className={`ink-border-thick hard-shadow-sm rounded-lg p-4 text-left transition-transform hover:-translate-y-1 ${variant === v.id ? "bg-pow-yellow" : "bg-card"}`}
+              className={`ink-border-thick hard-shadow-sm rounded-lg p-4 text-left transition-transform hover:-translate-y-1 ${variant === v.id ? "bg-pow-yellow text-ink-fixed" : "bg-card"}`}
             >
               <div className="text-3xl mb-1">{v.emoji}</div>
               <div className="font-display text-lg">{v.name}</div>

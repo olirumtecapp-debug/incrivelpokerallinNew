@@ -86,11 +86,11 @@ function AuthPage() {
           <div className="flex gap-2 mb-5">
             <button
               onClick={() => setMode("signin")}
-              className={`flex-1 ink-border font-display py-2 rounded ${mode === "signin" ? "bg-pow-yellow" : "bg-white"}`}
+              className={`flex-1 ink-border font-display py-2 rounded ${mode === "signin" ? "bg-pow-yellow text-ink-fixed" : "bg-white text-ink-fixed"}`}
             >ENTRAR</button>
             <button
               onClick={() => setMode("signup")}
-              className={`flex-1 ink-border font-display py-2 rounded ${mode === "signup" ? "bg-pow-yellow" : "bg-white"}`}
+              className={`flex-1 ink-border font-display py-2 rounded ${mode === "signup" ? "bg-pow-yellow text-ink-fixed" : "bg-white text-ink-fixed"}`}
             >CRIAR CONTA</button>
           </div>
 
@@ -101,7 +101,7 @@ function AuthPage() {
                 <input
                   type="text" value={username} onChange={(e) => setUsername(e.target.value)}
                   placeholder="Seu nick no jogo" maxLength={30}
-                  className="w-full ink-border bg-white px-3 py-2 rounded font-body"
+                  className="w-full ink-border bg-white text-ink-fixed px-3 py-2 rounded font-body"
                 />
               </div>
             )}
@@ -110,7 +110,7 @@ function AuthPage() {
               <input
                 type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 required autoComplete="email"
-                className="w-full ink-border bg-white px-3 py-2 rounded font-body"
+                className="w-full ink-border bg-white text-ink-fixed px-3 py-2 rounded font-body"
               />
             </div>
             <div>
@@ -118,7 +118,7 @@ function AuthPage() {
               <input
                 type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 required minLength={6} autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                className="w-full ink-border bg-white px-3 py-2 rounded font-body"
+                className="w-full ink-border bg-white text-ink-fixed px-3 py-2 rounded font-body"
               />
             </div>
             <ComicButton type="submit" variant="primary" disabled={busy} className="w-full">

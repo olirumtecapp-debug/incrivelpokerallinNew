@@ -69,7 +69,7 @@ function Settings() {
               <button
                 key={t.id}
                 onClick={() => { sfx.unlock(); sfx.play("click"); setTheme(t.id); }}
-                className={`ink-border-thick hard-shadow-sm rounded-lg p-4 text-left transition-transform hover:-translate-y-1 ${theme === t.id ? "bg-pow-yellow" : "bg-card"}`}
+                className={`ink-border-thick hard-shadow-sm rounded-lg p-4 text-left transition-transform hover:-translate-y-1 ${theme === t.id ? "bg-pow-yellow text-ink-fixed" : "bg-card"}`}
               >
                 <div className={`w-full h-16 ${t.swatch} ink-border rounded mb-3`} />
                 <div className="font-display text-lg">{t.name}</div>

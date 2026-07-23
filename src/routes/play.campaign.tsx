@@ -83,7 +83,7 @@ function CampaignPage() {
                 key={s.id}
                 disabled={locked}
                 onClick={() => setActiveStage(s)}
-                className={`w-full ink-border-thick hard-shadow rounded-lg p-4 text-left transition-transform disabled:opacity-40 disabled:cursor-not-allowed ${completed ? "bg-pow-yellow" : "bg-card"} enabled:hover:-translate-y-1 enabled:hover:-translate-x-1`}
+                className={`w-full ink-border-thick hard-shadow rounded-lg p-4 text-left transition-transform disabled:opacity-40 disabled:cursor-not-allowed ${completed ? "bg-pow-yellow text-ink-fixed" : "bg-card"} enabled:hover:-translate-y-1 enabled:hover:-translate-x-1`}
               >
                 <div className="flex items-center gap-4">
                   <div className="text-5xl shrink-0">{s.flag}</div>
