@@ -102,10 +102,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+const noFlashScript = `(function(){try{var m=localStorage.getItem('ip_mode');if(!m){m=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(m==='dark'){document.documentElement.classList.add('dark');}var t=localStorage.getItem('ip_theme');if(t==='neon'){document.documentElement.classList.add('theme-neon');}else if(t==='minimal'){document.documentElement.classList.add('theme-minimal');}}catch(e){}})();`;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
-      <head><HeadContent /></head>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
+        <HeadContent />
+      </head>
       <body>{children}<Scripts /></body>
     </html>
   );
