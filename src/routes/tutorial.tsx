@@ -70,7 +70,7 @@ function Tutorial() {
           <div className="space-y-2">
             {HANDS.map((h, i) => (
               <div key={h.rank} className="ink-border hard-shadow-sm bg-card rounded-md p-3 flex items-center gap-4">
-                <div className="ink-border bg-pow-yellow font-display text-2xl w-12 h-12 flex items-center justify-center shrink-0">
+                <div className="ink-border bg-pow-yellow text-ink-fixed font-display text-2xl w-12 h-12 flex items-center justify-center shrink-0">
                   {HANDS.length - i}
                 </div>
                 <div className="min-w-0 flex-1">

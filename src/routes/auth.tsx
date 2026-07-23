@@ -135,7 +135,7 @@ function AuthPage() {
           <button
             onClick={handleGoogle}
             disabled={busy}
-            className="w-full ink-border-thick hard-shadow-sm bg-white hover:bg-pow-yellow px-4 py-3 rounded font-display text-lg flex items-center justify-center gap-2 transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+            className="w-full ink-border-thick hard-shadow-sm bg-white text-ink-fixed hover:bg-pow-yellow px-4 py-3 rounded font-display text-lg flex items-center justify-center gap-2 transition-transform hover:-translate-y-0.5 disabled:opacity-50"
           >
             <span className="text-xl">🔍</span> ENTRAR COM GOOGLE
           </button>

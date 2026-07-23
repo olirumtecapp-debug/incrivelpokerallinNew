@@ -22,9 +22,9 @@ export function AvatarPicker({ value, onChange, className }: Props) {
             aria-label={a.name}
             aria-pressed={selected}
             className={cn(
-              "ink-border rounded-lg overflow-hidden aspect-square bg-white transition-transform",
+              "ink-border rounded-lg overflow-hidden aspect-square bg-white text-ink-fixed transition-transform",
               "hover:scale-105 hover:hard-shadow-sm",
-              selected && "ink-border-thick hard-shadow bg-pow-yellow scale-105",
+              selected && "ink-border-thick hard-shadow bg-pow-yellow text-ink-fixed scale-105",
             )}
           >
             <img
@@ -57,7 +57,7 @@ export function AvatarBadge({
   return (
     <div
       className={cn(
-        "ink-border shrink-0 rounded-full overflow-hidden bg-white grid place-items-center",
+        "ink-border shrink-0 rounded-full overflow-hidden bg-white text-ink-fixed grid place-items-center",
         className,
       )}
       style={{ width: size, height: size }}

@@ -187,7 +187,7 @@ function Lobby() {
           </div>
         </section>
 
-        <div className="ink-border hard-shadow-sm bg-pow-yellow rounded p-3 text-sm">
+        <div className="ink-border hard-shadow-sm bg-pow-yellow text-ink-fixed rounded p-3 text-sm">
           <b>ℹ Aviso:</b> jogo entre amigos, sem cadastro. Qualquer um com o código entra na sala.
         </div>
       </main>

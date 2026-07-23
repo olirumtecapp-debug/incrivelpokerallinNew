@@ -46,8 +46,8 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
 
       <div className={cn(
         "ink-border-thick hard-shadow-sm bg-card px-2 py-1 md:px-3 md:py-1.5 landscape-short:px-1.5 landscape-short:py-0.5 min-w-[110px] md:min-w-[140px] landscape-short:!min-w-[90px] text-center rounded-md",
-        isActive && "bg-pow-yellow scale-105 transition-transform",
-        isWinner && "bg-pow-yellow",
+        isActive && "bg-pow-yellow text-ink-fixed scale-105 transition-transform",
+        isWinner && "bg-pow-yellow text-ink-fixed",
       )}>
         <div className="flex items-center justify-center gap-1.5 landscape-short:gap-1">
           {avatarId ? (

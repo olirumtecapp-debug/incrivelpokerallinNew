@@ -91,7 +91,7 @@ export function PokerTable({ difficulty, modeLabel, variant = "holdem", smallBli
             </div>
           </div>
           {botThinking && (
-            <div className="absolute -top-1 right-2 ink-border bg-white/90 text-ink font-display text-xs px-2 py-0.5 rounded animate-pulse">🤔</div>
+            <div className="absolute -top-1 right-2 ink-border bg-white/90 text-ink-fixed font-display text-xs px-2 py-0.5 rounded animate-pulse">🤔</div>
           )}
         </div>
 

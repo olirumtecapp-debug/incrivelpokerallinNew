@@ -106,7 +106,7 @@ function CampaignPage() {
         </div>
 
         {progress > STAGES.length && (
-          <div className="mt-6 ink-border-thick hard-shadow bg-pow-yellow p-4 text-center">
+          <div className="mt-6 ink-border-thick hard-shadow bg-pow-yellow text-ink-fixed p-4 text-center">
             <div className="font-display text-3xl">🏆 CAMPEÃO MUNDIAL!</div>
             <div className="text-sm mt-1">Você conquistou a Copa do Mundo de Poker HQ.</div>
           </div>
@@ -136,7 +136,7 @@ function CampaignMatch({ stage, boss, onExit, onWin }: {
           <div className="text-6xl text-center mb-3">{stage.flag}</div>
           <div className="font-display text-2xl text-center mb-1">FASE {stage.id}</div>
           <div className="font-display text-xl text-center text-pow-red mb-4">{stage.country}</div>
-          <div className="ink-border bg-white p-3 rounded font-body italic text-center">
+          <div className="ink-border bg-white text-ink-fixed p-3 rounded font-body italic text-center">
             "{stage.intro}"
           </div>
           <div className="mt-4 flex items-center justify-center gap-3">
