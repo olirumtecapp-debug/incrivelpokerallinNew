@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { lockLandscape, unlockOrientation } from "@/lib/orientation";
 
 export function FullscreenToggle({ className }: { className?: string }) {
   const [supported, setSupported] = useState(false);
