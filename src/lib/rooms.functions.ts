@@ -1,15 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import {
-  createInitialState, startHand as engineStartHand,
-  playerAction as enginePlayerAction, nextHand as engineNextHand,
-  type GameState, type PokerAction,
-} from "@/lib/poker/engine";
+import type { GameState, PokerAction } from "@/lib/poker/engine";
 import type { VariantId } from "@/lib/poker/variants";
 import type { Card } from "@/lib/poker/cards";
 import {
   MAX_ROOM_PLAYERS, nameSchema, guestSchema, actionSchema,
 } from "@/lib/rooms.shared";
+
 
 
 // ============ CREATE ROOM ============
@@ -130,7 +127,9 @@ export const startRoomHand = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema }).parse(d))
   .handler(async ({ data }) => {
     const { getAdmin } = await import("@/lib/rooms.server");
+    const { createInitialState, startHand: engineStartHand } = await import("@/lib/poker/engine");
     const supa = await getAdmin();
+
     const { data: room, error: rErr } = await supa.from("rooms")
       .select("*").eq("id", data.roomId).single();
     if (rErr || !room) throw new Error("Sala não encontrada");
@@ -204,7 +203,9 @@ export const submitAction = createServerFn({ method: "POST" })
   }).parse(d))
   .handler(async ({ data }) => {
     const { getAdmin } = await import("@/lib/rooms.server");
+    const { playerAction: enginePlayerAction } = await import("@/lib/poker/engine");
     const supa = await getAdmin();
+
     const { data: row, error } = await supa.from("game_states")
       .select("state, version").eq("room_id", data.roomId).single();
     if (error || !row) throw new Error("Estado não encontrado");
@@ -236,7 +237,9 @@ export const nextRoomHand = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema }).parse(d))
   .handler(async ({ data }) => {
     const { getAdmin } = await import("@/lib/rooms.server");
+    const { nextHand: engineNextHand } = await import("@/lib/poker/engine");
     const supa = await getAdmin();
+
     const { data: room } = await supa.from("rooms").select("created_by_guest").eq("id", data.roomId).single();
     if (!room || room.created_by_guest !== data.guestId) throw new Error("Só o criador avança");
     const { data: row, error } = await supa.from("game_states")
