@@ -279,3 +279,58 @@ export const getRoomView = createServerFn({ method: "POST" })
     };
     return { state: masked, version: row.version };
   });
+
+// ============ LOOKUP ROOM BY CODE (safe fields) ============
+export const getRoomByCode = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ code: z.string().min(4).max(20) }).parse(d))
+  .handler(async ({ data }) => {
+    const { getAdmin } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
+    const { data: room } = await supa.from("rooms")
+      .select("id, code, status, small_blind, big_blind, variant, max_players")
+      .eq("code", data.code.toUpperCase()).maybeSingle();
+    if (!room) return { room: null };
+    return { room };
+  });
+
+// ============ GET LOBBY (masked players) ============
+export const getRoomLobby = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema }).parse(d))
+  .handler(async ({ data }) => {
+    const { getAdmin } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
+    const { data: room } = await supa.from("rooms")
+      .select("id, code, status, small_blind, big_blind, variant, max_players, created_by_guest")
+      .eq("id", data.roomId).maybeSingle();
+    if (!room) return { room: null, players: [], isMember: false, isHost: false };
+
+    const { data: pls } = await supa.from("room_players")
+      .select("id, room_id, guest_id, display_name, avatar_emoji, seat, stack, is_ready, joined_at")
+      .eq("room_id", data.roomId).order("seat", { ascending: true });
+
+    const rows = pls ?? [];
+    const isMember = rows.some((p) => p.guest_id === data.guestId);
+    // Mask guest_id: only expose own guest_id; others get a stable pseudo id
+    const masked = rows.map((p) => ({
+      id: p.id,
+      seat: p.seat,
+      display_name: p.display_name,
+      avatar_emoji: p.avatar_emoji,
+      stack: p.stack,
+      is_ready: p.is_ready,
+      joined_at: p.joined_at,
+      guest_id: p.guest_id === data.guestId ? p.guest_id : null,
+      is_host: p.guest_id === room.created_by_guest,
+      is_self: p.guest_id === data.guestId,
+    }));
+    return {
+      room: {
+        id: room.id, code: room.code, status: room.status,
+        small_blind: room.small_blind, big_blind: room.big_blind,
+        variant: room.variant, max_players: room.max_players,
+      },
+      players: masked,
+      isMember,
+      isHost: room.created_by_guest === data.guestId,
+    };
+  });
