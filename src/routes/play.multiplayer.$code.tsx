@@ -359,7 +359,7 @@ function Room() {
         <div className="flex flex-wrap gap-1.5 md:gap-3 landscape-short:gap-1 justify-center pt-1 landscape-short:pt-0">
           {others.map((p) => {
             const idx = gameState.players.findIndex((x) => x.id === p.id);
-            const pr = players.find((rp) => rp.guest_id === p.id);
+            const pr = players.find((rp) => rp.display_name === p.name);
             return (
               <PlayerSeat
                 key={p.id}
