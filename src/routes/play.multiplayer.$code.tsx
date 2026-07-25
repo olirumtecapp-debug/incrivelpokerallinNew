@@ -249,7 +249,6 @@ function Room() {
   if (!room) return <div className="min-h-screen flex items-center justify-center font-display text-2xl">carregando sala...</div>;
 
   // Host vem do server (is_host); "isCreator" é quando o próprio jogador é host
-  const hostPlayer = players.find((p) => p.is_host);
   const isCreator = players.some((p) => p.is_host && p.is_self);
   const readyCount = players.filter((p) => p.is_ready).length;
   const canStart = isCreator && players.length >= 2 && readyCount === players.length;
