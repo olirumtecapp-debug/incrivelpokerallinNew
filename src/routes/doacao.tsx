@@ -38,7 +38,7 @@ function DoacaoPage() {
   const copyName = async () => {
     try {
       await navigator.clipboard.writeText("Murilo Ferreira da Silva");
-      try { sfx.tap(); } catch {}
+      try { sfx.play("click"); } catch {}
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {}
