@@ -237,7 +237,9 @@ export const nextRoomHand = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema }).parse(d))
   .handler(async ({ data }) => {
     const { getAdmin } = await import("@/lib/rooms.server");
+    const { nextHand: engineNextHand } = await import("@/lib/poker/engine");
     const supa = await getAdmin();
+
     const { data: room } = await supa.from("rooms").select("created_by_guest").eq("id", data.roomId).single();
     if (!room || room.created_by_guest !== data.guestId) throw new Error("Só o criador avança");
     const { data: row, error } = await supa.from("game_states")
