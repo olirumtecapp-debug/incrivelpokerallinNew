@@ -30,7 +30,7 @@ export const createRoom = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({
     guestId: guestSchema,
     displayName: nameSchema,
-    avatarEmoji: z.string().max(4).optional(),
+    avatarEmoji: z.string().max(32).optional(),
     variant: z.enum(["holdem", "omaha", "shortdeck"]),
     smallBlind: z.number().int().min(1).max(1000),
     bigBlind: z.number().int().min(2).max(2000),
@@ -79,7 +79,7 @@ export const joinRoom = createServerFn({ method: "POST" })
     code: z.string().min(4).max(20),
     guestId: guestSchema,
     displayName: nameSchema,
-    avatarEmoji: z.string().max(4).optional(),
+    avatarEmoji: z.string().max(32).optional(),
   }).parse(d))
   .handler(async ({ data }) => {
     const supa = await admin();

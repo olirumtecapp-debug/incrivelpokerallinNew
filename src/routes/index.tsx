@@ -5,6 +5,7 @@ import { ComicButton } from "@/components/comic/ComicButton";
 import { LandscapeHint } from "@/components/comic/LandscapeHint";
 import { FullscreenToggle } from "@/components/comic/FullscreenToggle";
 import { ThemeToggle } from "@/components/comic/ThemeToggle";
+import { DonateButton } from "@/components/comic/DonateButton";
 
 
 export const Route = createFileRoute("/")({
@@ -62,6 +63,7 @@ function Home() {
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link to="/tutorial"><ComicButton variant="secondary" size="sm">📖 COMO JOGAR</ComicButton></Link>
           <Link to="/settings"><ComicButton variant="secondary" size="sm">⚙️ AJUSTES</ComicButton></Link>
+          <DonateButton />
         </div>
 
         <footer className="mt-10 text-center text-white/60 font-body text-xs">

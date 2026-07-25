@@ -28,7 +28,8 @@ function Lobby() {
   const [variant, setVariant] = useState<VariantId>("holdem");
   const [smallBlind, setSmallBlind] = useState(10);
   const [bigBlind, setBigBlind] = useState(20);
-  const [maxPlayers, setMaxPlayers] = useState<number>(MAX_ROOM_PLAYERS);
+  const [maxPlayers, setMaxPlayers] = useState<number>(4);
+  const [isMobile, setIsMobile] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [name, setName] = useState("");
@@ -37,6 +38,15 @@ function Lobby() {
   useEffect(() => {
     setName(getGuestName());
     setAvatarId(getGuestAvatarId());
+    const mq = window.matchMedia("(max-width: 768px)");
+    const apply = () => {
+      const mob = mq.matches;
+      setIsMobile(mob);
+      setMaxPlayers((prev) => (mob ? Math.min(prev, 4) : prev));
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
   }, []);
 
   const currentAvatar = getAvatar(avatarId);
@@ -148,7 +158,7 @@ function Lobby() {
           <div className="mb-4">
             <div className="text-sm font-bold mb-2">Máx jogadores</div>
             <div className="flex flex-wrap gap-2">
-              {[2, 3, 4, 5, 6].map((n) => (
+              {(isMobile ? [2, 3, 4] : [2, 3, 4, 5, 6]).map((n) => (
                 <button
                   key={n}
                   type="button"
@@ -162,7 +172,9 @@ function Lobby() {
               ))}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Máximo {MAX_ROOM_PLAYERS} jogadores por sala.
+              {isMobile
+                ? "No celular, máximo 4 jogadores por sala pra caber tudo na tela."
+                : `No desktop, até ${MAX_ROOM_PLAYERS} jogadores.`}
             </p>
           </div>
 

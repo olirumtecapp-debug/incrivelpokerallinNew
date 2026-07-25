@@ -4,6 +4,7 @@ import { ComicButton } from "@/components/comic/ComicButton";
 import { VARIANT_LIST } from "@/lib/poker/variants";
 import { sfx } from "@/lib/audio/sfx";
 import { ThemeToggle } from "@/components/comic/ThemeToggle";
+import { DonateButton } from "@/components/comic/DonateButton";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -129,6 +130,14 @@ function Settings() {
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
+          <h2 className="font-display text-2xl mb-2">APOIE O PROJETO</h2>
+          <p className="text-sm text-muted-foreground mb-3">
+            Curtiu o jogo? Uma dose de café mantém o Incrível Poker vivo.
+          </p>
+          <DonateButton size="md" label="FAZER UMA DOAÇÃO" />
         </section>
 
         <div className="pt-4">
