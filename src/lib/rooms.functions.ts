@@ -11,7 +11,6 @@ import {
   MAX_ROOM_PLAYERS, nameSchema, guestSchema, actionSchema,
 } from "@/lib/rooms.shared";
 
-export type { SubmitActionInput } from "@/lib/rooms.shared";
 
 // ============ CREATE ROOM ============
 export const createRoom = createServerFn({ method: "POST" })
