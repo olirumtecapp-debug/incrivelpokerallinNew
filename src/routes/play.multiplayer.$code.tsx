@@ -167,7 +167,7 @@ function Room() {
     try {
       await fnJoin({ data: { code: room.code, guestId: myGuestId, displayName: trimmed, avatarEmoji: avatarInput } });
       setNeedName(false);
-      await fetchPlayers(room.id, myGuestId);
+      await fetchLobby(room.id, myGuestId);
       await fetchState(room.id, myGuestId);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Falhou";
