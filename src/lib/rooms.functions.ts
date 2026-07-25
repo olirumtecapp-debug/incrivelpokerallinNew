@@ -7,23 +7,11 @@ import {
 } from "@/lib/poker/engine";
 import type { VariantId } from "@/lib/poker/variants";
 import type { Card } from "@/lib/poker/cards";
+import {
+  MAX_ROOM_PLAYERS, nameSchema, guestSchema, actionSchema,
+} from "@/lib/rooms.shared";
 
-export const MAX_ROOM_PLAYERS = 6;
-
-function randomCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let out = "PKR-";
-  for (let i = 0; i < 4; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
-}
-
-const nameSchema = z.string().trim().min(2).max(20);
-const guestSchema = z.string().min(8).max(64);
-
-async function admin() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
+export type { SubmitActionInput } from "@/lib/rooms.shared";
 
 // ============ CREATE ROOM ============
 export const createRoom = createServerFn({ method: "POST" })
@@ -38,7 +26,8 @@ export const createRoom = createServerFn({ method: "POST" })
     maxPlayers: z.number().int().min(2).max(MAX_ROOM_PLAYERS),
   }).parse(d))
   .handler(async ({ data }) => {
-    const supa = await admin();
+    const { getAdmin, randomCode } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
     const maxPlayers = Math.min(data.maxPlayers, MAX_ROOM_PLAYERS);
 
     let code = "";
@@ -82,7 +71,8 @@ export const joinRoom = createServerFn({ method: "POST" })
     avatarEmoji: z.string().max(32).optional(),
   }).parse(d))
   .handler(async ({ data }) => {
-    const supa = await admin();
+    const { getAdmin } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
     const { data: room, error: roomErr } = await supa.from("rooms")
       .select("*").eq("code", data.code.toUpperCase()).maybeSingle();
     if (roomErr) throw new Error(roomErr.message);
@@ -116,7 +106,8 @@ export const joinRoom = createServerFn({ method: "POST" })
 export const leaveRoom = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema }).parse(d))
   .handler(async ({ data }) => {
-    const supa = await admin();
+    const { getAdmin } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
     await supa.from("room_players")
       .delete().eq("room_id", data.roomId).eq("guest_id", data.guestId);
     return { ok: true };
@@ -126,7 +117,8 @@ export const leaveRoom = createServerFn({ method: "POST" })
 export const toggleReady = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema, ready: z.boolean() }).parse(d))
   .handler(async ({ data }) => {
-    const supa = await admin();
+    const { getAdmin } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
     const { error } = await supa.from("room_players")
       .update({ is_ready: data.ready })
       .eq("room_id", data.roomId).eq("guest_id", data.guestId);
@@ -138,7 +130,8 @@ export const toggleReady = createServerFn({ method: "POST" })
 export const startRoomHand = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema }).parse(d))
   .handler(async ({ data }) => {
-    const supa = await admin();
+    const { getAdmin } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
     const { data: room, error: rErr } = await supa.from("rooms")
       .select("*").eq("id", data.roomId).single();
     if (rErr || !room) throw new Error("Sala não encontrada");
@@ -204,15 +197,6 @@ export const startRoomHand = createServerFn({ method: "POST" })
   });
 
 // ============ SUBMIT ACTION ============
-const actionSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("fold") }),
-  z.object({ type: z.literal("check") }),
-  z.object({ type: z.literal("call") }),
-  z.object({ type: z.literal("raise"), amount: z.number().int().min(1) }),
-  z.object({ type: z.literal("allin") }),
-]);
-export type SubmitActionInput = z.infer<typeof actionSchema>;
-
 export const submitAction = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({
     roomId: z.string().uuid(),
@@ -220,7 +204,8 @@ export const submitAction = createServerFn({ method: "POST" })
     action: actionSchema,
   }).parse(d))
   .handler(async ({ data }) => {
-    const supa = await admin();
+    const { getAdmin } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
     const { data: row, error } = await supa.from("game_states")
       .select("state, version").eq("room_id", data.roomId).single();
     if (error || !row) throw new Error("Estado não encontrado");
@@ -251,7 +236,8 @@ export const submitAction = createServerFn({ method: "POST" })
 export const nextRoomHand = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema }).parse(d))
   .handler(async ({ data }) => {
-    const supa = await admin();
+    const { getAdmin } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
     const { data: room } = await supa.from("rooms").select("created_by_guest").eq("id", data.roomId).single();
     if (!room || room.created_by_guest !== data.guestId) throw new Error("Só o criador avança");
     const { data: row, error } = await supa.from("game_states")
@@ -277,7 +263,8 @@ export const nextRoomHand = createServerFn({ method: "POST" })
 export const getRoomView = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema }).parse(d))
   .handler(async ({ data }) => {
-    const supa = await admin();
+    const { getAdmin } = await import("@/lib/rooms.server");
+    const supa = await getAdmin();
     const { data: row } = await supa.from("game_states")
       .select("state, version").eq("room_id", data.roomId).maybeSingle();
     if (!row) return { state: null, version: 0 };
