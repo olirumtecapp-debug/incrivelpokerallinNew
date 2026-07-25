@@ -402,7 +402,7 @@ function Room() {
               isWinner={winnerIds.has(me.id)}
               holeCount={v.holeCards}
               isMe
-              avatarId={players.find((rp) => rp.guest_id === myGuestId)?.avatar_emoji}
+              avatarId={players.find((rp) => rp.is_self)?.avatar_emoji}
             />
           </div>
         )}
