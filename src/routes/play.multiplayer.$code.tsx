@@ -1,8 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { getRoomView, submitAction, startRoomHand, nextRoomHand, leaveRoom, toggleReady, joinRoom } from "@/lib/rooms.functions";
+import { getRoomView, submitAction, startRoomHand, nextRoomHand, leaveRoom, toggleReady, joinRoom, getRoomByCode, getRoomLobby } from "@/lib/rooms.functions";
 import { MAX_ROOM_PLAYERS, type SubmitActionInput } from "@/lib/rooms.shared";
 
 import type { GameState } from "@/lib/poker/engine";
@@ -42,8 +41,9 @@ interface RoomRow {
   max_players: number;
 }
 interface RoomPlayerRow {
-  id: string; room_id: string; guest_id: string | null; display_name: string;
+  id: string; guest_id: string | null; display_name: string;
   avatar_emoji: string; seat: number; stack: number; is_ready: boolean; joined_at: string;
+  is_host: boolean; is_self: boolean;
 }
 
 function Room() {
@@ -67,26 +67,43 @@ function Room() {
   const fnLeave = useServerFn(leaveRoom);
   const fnReady = useServerFn(toggleReady);
   const fnJoin = useServerFn(joinRoom);
+  const fnRoomByCode = useServerFn(getRoomByCode);
+  const fnLobby = useServerFn(getRoomLobby);
+
+  const lastActionRef = useRef<string>("");
 
   const fetchState = useCallback(async (roomId: string, guestId: string) => {
     try {
       const { state } = await fnGetView({ data: { roomId, guestId } });
-      if (state) setGameState(state as GameState);
+      if (state) {
+        setGameState((prev) => {
+          const s = state as GameState;
+          // Detect and play sfx on state transitions
+          const key = `${s.handNumber}:${s.street}:${s.actionIdx}:${s.pot}`;
+          if (lastActionRef.current && lastActionRef.current !== key) {
+            if (prev && s.handNumber !== prev.handNumber) sfx.play("cardDeal");
+            else if (prev && s.pot > prev.pot) sfx.play("chipDrop");
+          }
+          lastActionRef.current = key;
+          return s;
+        });
+      }
     } catch (e) {
       console.error(e);
     }
   }, [fnGetView]);
 
-  const fetchPlayers = useCallback(async (roomId: string, guestId: string) => {
-    const { data: pls } = await supabase.from("room_players")
-      .select("id, room_id, guest_id, display_name, avatar_emoji, seat, stack, is_ready, joined_at")
-      .eq("room_id", roomId).order("seat", { ascending: true });
-    if (pls) {
+  const fetchLobby = useCallback(async (roomId: string, guestId: string) => {
+    try {
+      const { room: r, players: pls } = await fnLobby({ data: { roomId, guestId } });
+      if (r) setRoom(r as RoomRow);
       setPlayers(pls as RoomPlayerRow[]);
-      const me = pls.find((p) => p.guest_id === guestId);
+      const me = pls.find((p) => p.is_self);
       if (me) setReady(me.is_ready);
+    } catch (e) {
+      console.error(e);
     }
-  }, []);
+  }, [fnLobby]);
 
   // Bootstrap
   useEffect(() => {
@@ -96,18 +113,16 @@ function Room() {
       setMyGuestId(guestId);
       sfx.unlock();
 
-      const { data: r, error } = await supabase.from("rooms")
-        .select("id, code, status, small_blind, big_blind, variant, max_players").eq("code", code).maybeSingle();
-      if (error || !r) { toast.error("Sala não encontrada"); navigate({ to: "/play/multiplayer" }); return; }
+      const { room: r } = await fnRoomByCode({ data: { code } });
+      if (!r) { toast.error("Sala não encontrada"); navigate({ to: "/play/multiplayer" }); return; }
       if (cancelled) return;
       setRoom(r as RoomRow);
 
-      // Já é membro?
-      const { data: mine } = await supabase.from("room_players")
-        .select("id").eq("room_id", r.id).eq("guest_id", guestId).maybeSingle();
+      // Check membership via lobby fetch
+      const lobby = await fnLobby({ data: { roomId: r.id, guestId } });
+      if (cancelled) return;
 
-      if (!mine) {
-        // Precisa de apelido pra entrar
+      if (!lobby.isMember) {
         const savedName = getGuestName();
         if (!savedName) {
           setAvatarInput(getGuestAvatarId());
@@ -125,37 +140,23 @@ function Room() {
         }
       }
 
-      await fetchPlayers(r.id, guestId);
+      await fetchLobby(r.id, guestId);
       await fetchState(r.id, guestId);
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
-  // Realtime
+  // Polling (Realtime canais respeitam RLS — usamos polling curto)
   useEffect(() => {
     if (!room || !myGuestId) return;
     const roomId = room.id;
-    const ch = supabase
-      .channel(`room:${roomId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "room_players", filter: `room_id=eq.${roomId}` },
-        () => { void fetchPlayers(roomId, myGuestId); })
-      .on("postgres_changes", { event: "*", schema: "public", table: "game_actions", filter: `room_id=eq.${roomId}` },
-        (payload) => {
-          void fetchState(roomId, myGuestId);
-          const action = (payload.new as { action_type?: string })?.action_type;
-          if (action === "hand_start") sfx.play("cardDeal");
-          else if (action === "raise") sfx.play("chipDrop");
-          else if (action === "call") sfx.play("chipDrop");
-          else if (action === "fold") sfx.play("fold");
-          else if (action === "allin") sfx.play("allInWhoosh");
-          else if (action === "check") sfx.play("click");
-        })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${roomId}` },
-        (payload) => setRoom(payload.new as RoomRow))
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
-  }, [room, myGuestId, fetchPlayers, fetchState]);
+    const iv = window.setInterval(() => {
+      void fetchLobby(roomId, myGuestId);
+      void fetchState(roomId, myGuestId);
+    }, 1500);
+    return () => { window.clearInterval(iv); };
+  }, [room, myGuestId, fetchLobby, fetchState]);
 
   async function submitNameAndJoin() {
     const trimmed = nameInput.trim();
