@@ -203,7 +203,9 @@ export const submitAction = createServerFn({ method: "POST" })
   }).parse(d))
   .handler(async ({ data }) => {
     const { getAdmin } = await import("@/lib/rooms.server");
+    const { playerAction: enginePlayerAction } = await import("@/lib/poker/engine");
     const supa = await getAdmin();
+
     const { data: row, error } = await supa.from("game_states")
       .select("state, version").eq("room_id", data.roomId).single();
     if (error || !row) throw new Error("Estado não encontrado");
