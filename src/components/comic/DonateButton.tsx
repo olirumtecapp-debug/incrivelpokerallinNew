@@ -1,15 +1,14 @@
+import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 
 interface Props {
-  href?: string;
   size?: "sm" | "md";
   className?: string;
   label?: string;
 }
 
-/** Botão HQ de doação — abre link externo em nova aba. */
+/** Botão HQ de doação — navega para a página /doacao com Pix. */
 export function DonateButton({
-  href = "https://ko-fi.com/incrivelbanana",
   size = "sm",
   className,
   label = "APOIAR",
@@ -19,10 +18,8 @@ export function DonateButton({
       ? "px-3 py-1.5 text-sm"
       : "px-4 py-2 text-base";
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Link
+      to="/doacao"
       className={cn(
         "inline-flex items-center gap-2 font-display uppercase tracking-wide",
         "ink-border-thick hard-shadow bg-pow-yellow text-ink-fixed rounded",
@@ -34,6 +31,6 @@ export function DonateButton({
     >
       <span aria-hidden>❤️</span>
       <span>{label}</span>
-    </a>
+    </Link>
   );
 }

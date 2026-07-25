@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TutorialRouteImport } from './routes/tutorial'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as DoacaoRouteImport } from './routes/doacao'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlayZenRouteImport } from './routes/play.zen'
@@ -33,6 +34,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DoacaoRoute = DoacaoRouteImport.update({
+  id: '/doacao',
+  path: '/doacao',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -74,6 +80,7 @@ const PlayMultiplayerCodeRoute = PlayMultiplayerCodeRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/doacao': typeof DoacaoRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tutorial': typeof TutorialRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/doacao': typeof DoacaoRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tutorial': typeof TutorialRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/doacao': typeof DoacaoRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tutorial': typeof TutorialRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/doacao'
     | '/settings'
     | '/sitemap.xml'
     | '/tutorial'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/doacao'
     | '/settings'
     | '/sitemap.xml'
     | '/tutorial'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/doacao'
     | '/settings'
     | '/sitemap.xml'
     | '/tutorial'
@@ -150,6 +162,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  DoacaoRoute: typeof DoacaoRoute
   SettingsRoute: typeof SettingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TutorialRoute: typeof TutorialRoute
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/doacao': {
+      id: '/doacao'
+      path: '/doacao'
+      fullPath: '/doacao'
+      preLoaderRoute: typeof DoacaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -249,6 +269,7 @@ const PlayMultiplayerRouteWithChildren = PlayMultiplayerRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  DoacaoRoute: DoacaoRoute,
   SettingsRoute: SettingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TutorialRoute: TutorialRoute,
