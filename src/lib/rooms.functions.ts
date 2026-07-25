@@ -127,7 +127,9 @@ export const startRoomHand = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ roomId: z.string().uuid(), guestId: guestSchema }).parse(d))
   .handler(async ({ data }) => {
     const { getAdmin } = await import("@/lib/rooms.server");
+    const { createInitialState, startHand: engineStartHand } = await import("@/lib/poker/engine");
     const supa = await getAdmin();
+
     const { data: room, error: rErr } = await supa.from("rooms")
       .select("*").eq("id", data.roomId).single();
     if (rErr || !room) throw new Error("Sala não encontrada");
