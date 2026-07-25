@@ -280,7 +280,7 @@ function Room() {
                 <li key={p.id} className="ink-border bg-white text-ink-fixed p-2 rounded flex items-center gap-3">
                   <AvatarBadge avatarId={p.avatar_emoji} size={40} />
                   <span className="font-display flex-1 truncate">{p.display_name}</span>
-                  {p.guest_id === hostGuestId && <span className="text-xs ink-border bg-pow-yellow text-ink-fixed px-2 py-0.5 font-display">HOST</span>}
+                  {p.is_host && <span className="text-xs ink-border bg-pow-yellow text-ink-fixed px-2 py-0.5 font-display">HOST</span>}
                   <span className={`text-xs font-display px-2 py-0.5 ink-border ${p.is_ready ? "bg-pow-yellow text-ink-fixed" : "bg-muted"}`}>
                     {p.is_ready ? "PRONTO" : "aguardando"}
                   </span>
