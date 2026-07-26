@@ -51,9 +51,9 @@ export function PlayerSeat({ player, isActive, isDealer, reveal, taunt, isWinner
       )}>
         <div className="flex items-center justify-center gap-1.5 landscape-short:gap-1">
           {avatarId ? (
-            <AvatarBadge avatarId={avatarId} size={isMe ? 32 : 24} variant="side" />
+            <AvatarBadge avatarId={avatarId} size={isMe ? 32 : 24} />
           ) : player.personality?.avatarId ? (
-            <AvatarBadge avatarId={player.personality.avatarId} size={isMe ? 32 : 24} variant="side" />
+            <AvatarBadge avatarId={player.personality.avatarId} size={isMe ? 32 : 24} />
           ) : (
             player.personality?.emoji && <span className="text-base md:text-lg landscape-short:text-xs">{player.personality.emoji}</span>
           )}

@@ -47,17 +47,13 @@ export function AvatarBadge({
   avatarId,
   size = 40,
   className,
-  variant = "front",
 }: {
   avatarId: string | null | undefined;
   size?: number;
   className?: string;
-  /** "front" = retrato (padrão); "side" = perfil lateral quando disponível (mesa em jogo). */
-  variant?: "front" | "side";
 }) {
   const avatar = AVATARS.find((a) => a.id === avatarId) ?? AVATARS[0];
   const fallback = !AVATARS.some((a) => a.id === avatarId);
-  const src = variant === "side" && avatar.sideUrl ? avatar.sideUrl : avatar.url;
   return (
     <div
       className={cn(
@@ -70,7 +66,7 @@ export function AvatarBadge({
         <span className="font-display text-xs">?</span>
       ) : (
         <img
-          src={src}
+          src={avatar.url}
           alt={avatar.name}
           width={size}
           height={size}

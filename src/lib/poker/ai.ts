@@ -164,17 +164,6 @@ export const PERSONALITIES: AiPersonality[] = [
       fold: ["Desapareço."],
     },
   },
-  {
-    id: "barto", name: "Bartô", title: "Buldogue do Blefe", difficulty: "hard",
-    avatarBg: "bg-amber-500", emoji: "🐶", avatarId: "barto",
-    taunts: {
-      win: ["Au au! Pote é meu!", "Farejei seu blefe.", "Ronrom... digo, uau!"],
-      lose: ["Latido de derrota...", "Só perdi o osso, não a guerra."],
-      bluffCalled: ["Ei! Como farejou?", "Bom nariz, humano."],
-      allIn: ["ALL IN! Solta o cachorro!", "Au-au-all-in!"],
-      fold: ["Vou pra caminha.", "Passo, mereço um petisco."],
-    },
-  },
 ];
 
 export function personalitiesForDifficulty(d: Difficulty): AiPersonality[] {
