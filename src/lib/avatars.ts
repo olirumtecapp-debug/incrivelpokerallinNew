@@ -11,16 +11,20 @@ import robot from "@/assets/avatars/robot.png.asset.json";
 import pirate from "@/assets/avatars/pirate.png.asset.json";
 import ninja from "@/assets/avatars/ninja.png.asset.json";
 import clown from "@/assets/avatars/clown.png.asset.json";
+import bartoFront from "@/assets/avatars/barto-front.png.asset.json";
+import bartoSide from "@/assets/avatars/barto-side.png.asset.json";
 
 export type AvatarId =
   | "shark" | "queen" | "cowboy" | "detective"
   | "mage" | "hacker" | "boss" | "rocker"
-  | "robot" | "pirate" | "ninja" | "clown";
+  | "robot" | "pirate" | "ninja" | "clown" | "barto";
 
 export interface Avatar {
   id: AvatarId;
   name: string;
   url: string;
+  /** Retrato lateral opcional (usado na mesa em jogo). Cai para `url` se ausente. */
+  sideUrl?: string;
   accent: string; // cor de destaque hex-ish (tailwind bg)
 }
 
@@ -37,6 +41,7 @@ export const AVATARS: Avatar[] = [
   { id: "pirate",    name: "O Pirata",   url: pirate.url,    accent: "bg-teal-600" },
   { id: "ninja",     name: "A Ninja",    url: ninja.url,     accent: "bg-neutral-900" },
   { id: "clown",     name: "O Palhaço",  url: clown.url,     accent: "bg-pink-500" },
+  { id: "barto",     name: "Bartô",      url: bartoFront.url, sideUrl: bartoSide.url, accent: "bg-amber-500" },
 ];
 
 const AVATAR_MAP: Record<string, Avatar> = Object.fromEntries(
