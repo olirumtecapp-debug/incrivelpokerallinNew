@@ -39,12 +39,32 @@ function DoacaoPage() {
   const [copied, setCopied] = useState(false);
 
   const copyPixCode = async () => {
+    let success = false;
     try {
       await navigator.clipboard.writeText(PIX_COPIA_E_COLA);
-      try { sfx.play("click"); } catch {}
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {}
+      success = true;
+    } catch {
+      // Fallback para navegadores/contextos que bloqueiam a Clipboard API.
+      try {
+        const textarea = document.createElement("textarea");
+        textarea.value = PIX_COPIA_E_COLA;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "absolute";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        success = true;
+      } catch {}
+    }
+    try { sfx.play("click"); } catch {}
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+    if (!success) {
+      // eslint-disable-next-line no-console
+      console.warn("Não foi possível copiar o código Pix automaticamente.");
+    }
   };
 
   return (
