@@ -97,10 +97,10 @@ function DoacaoPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="font-bold text-xl">Murilo Ferreira da Silva</div>
                 <button
-                  onClick={copyName}
+                  onClick={copyPixCode}
                   className="ink-border rounded-md bg-background p-1.5 hover:-translate-y-0.5 transition-transform"
-                  title="Copiar nome"
-                  aria-label="Copiar nome"
+                  title="Copiar código Pix"
+                  aria-label="Copiar código Pix"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </button>
@@ -108,6 +108,11 @@ function DoacaoPage() {
               <div className="text-sm mt-1 italic opacity-70 font-display">
                 Motorista &amp; desenvolvedor 🚗💻
               </div>
+              {copied && (
+                <div className="mt-2 font-display text-sm text-pow-yellow text-ink-fixed">
+                  ✓ Código Pix copiado! Cole no app do seu banco.
+                </div>
+              )}
             </div>
 
             <div className="pt-3 border-t-2 border-dashed border-foreground/40">
