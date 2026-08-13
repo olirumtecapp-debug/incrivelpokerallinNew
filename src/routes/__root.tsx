@@ -115,7 +115,11 @@ function RootShell({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
         <HeadContent />
       </head>
-      <body>{children}<Scripts /></body>
+      <body>
+        {children}
+        <Scripts />
+        <script src="https://projetoij.lovable.app/api/public/pij.js" data-project="bananabn" defer></script>
+      </body>
     </html>
   );
 }
