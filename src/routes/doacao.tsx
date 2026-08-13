@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Heart, Copy, Check, Home } from "lucide-react";
 import { ComicButton } from "@/components/comic/ComicButton";
 import { sfx } from "@/lib/audio/sfx";
-import qrAsset from "@/assets/qrcode-c6.png.asset.json";
 
 export const Route = createFileRoute("/doacao")({
   head: () => ({
@@ -33,7 +32,7 @@ export const Route = createFileRoute("/doacao")({
 });
 
 const PIX_COPIA_E_COLA =
-  "00020101021126580014br.gov.bcb.pix0136ccc2fd5a-cc51-4626-ac9b-8010315042f55204000053039865802BR5924MURILO FERREIRA DA SILVA6009SAO PAULO622905251KYF6GJBG4K0TVYH7QKHP9TSD63042519";
+  "00020101021126420014br.gov.bcb.pix0120olirumdev1@gmail.com5204000053039865802BR5918MURILO SILVA - PIJ6008BRASILIA62070503***630432FF";
 
 function DoacaoPage() {
   const [copied, setCopied] = useState(false);
@@ -92,60 +91,68 @@ function DoacaoPage() {
           </p>
         </div>
 
-        <div className="mt-5 grid gap-5 md:grid-cols-[auto_1fr] items-start">
-          <div className="ink-border rounded-xl bg-card p-3 mx-auto md:mx-0 w-full max-w-[280px]">
-            <div className="ink-border rounded-lg bg-white p-3">
-              <img
-                src={qrAsset.url}
-                alt="QR Code Pix C6 Bank — Murilo Ferreira da Silva"
-                className="w-full h-auto block"
-              />
-            </div>
-            <div className="mt-3 text-center font-display text-base uppercase tracking-widest text-foreground">
-              Pix · Aponte a câmera
-            </div>
-          </div>
-
-          <div className="ink-border rounded-xl bg-card text-card-foreground p-5 space-y-4">
-            <div>
-              <div className="font-display uppercase text-xs opacity-70 tracking-widest">Banco</div>
-              <div className="font-bold text-xl">C6 Bank</div>
-            </div>
-
-            <div>
-              <div className="font-display uppercase text-xs opacity-70 tracking-widest">Favorecido</div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="font-bold text-xl">Murilo Ferreira da Silva</div>
-                <button
-                  onClick={copyPixCode}
-                  className="ink-border rounded-md bg-background p-1.5 hover:-translate-y-0.5 transition-transform"
-                  title="Copiar código Pix"
-                  aria-label="Copiar código Pix"
-                >
-                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-              <div className="text-sm mt-1 italic opacity-70 font-display">
-                Motorista &amp; desenvolvedor 🚗💻
-              </div>
-              {copied && (
-                <div className="mt-2 font-display text-sm text-pow-yellow text-ink-fixed">
-                  ✓ Código Pix copiado! Cole no app do seu banco.
+        <div className="mt-5 grid gap-5 items-start">
+          <div className="ink-border rounded-xl bg-card text-card-foreground p-6 space-y-6">
+            <div className="space-y-4">
+              <div>
+                <div className="font-display uppercase text-xs opacity-70 tracking-widest mb-1">Favorecido</div>
+                <div className="font-bold text-2xl">MURILO SILVA - PIJ</div>
+                <div className="text-sm italic opacity-70 font-display">
+                  Desenvolvedor 💻
                 </div>
-              )}
+              </div>
+
+              <div className="space-y-2">
+                <div className="font-display uppercase text-xs opacity-70 tracking-widest">Código Pix Copia e Cola</div>
+                <div className="relative group">
+                  <div 
+                    className="ink-border rounded-lg bg-background p-4 font-mono text-[10px] sm:text-xs break-all leading-relaxed pr-12 min-h-[80px] flex items-center"
+                    onClick={copyPixCode}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && copyPixCode()}
+                  >
+                    {PIX_COPIA_E_COLA}
+                  </div>
+                  <button
+                    onClick={copyPixCode}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 ink-border rounded-md bg-pow-yellow p-2 hover:scale-105 transition-transform active:scale-95 shadow-sm"
+                    title="Copiar código Pix"
+                    aria-label="Copiar código Pix"
+                  >
+                    {copied ? <Check className="w-5 h-5 text-ink-fixed" /> : <Copy className="w-5 h-5 text-ink-fixed" />}
+                  </button>
+                </div>
+                {copied && (
+                  <div className="font-display text-sm text-pow-red font-bold animate-bounce">
+                    ✓ Código Pix copiado! Cole no app do seu banco.
+                  </div>
+                )}
+              </div>
+
+              <ComicButton 
+                variant="primary" 
+                className="w-full justify-center gap-2 text-lg py-6"
+                onClick={copyPixCode}
+              >
+                {copied ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
+                {copied ? "COPIADO!" : "COPIAR CÓDIGO PIX"}
+              </ComicButton>
             </div>
 
-            <div className="pt-3 border-t-2 border-dashed border-foreground/40">
-              <p className="text-sm font-display">
-                💛 Obrigado por chegar até aqui! Seu apoio faz uma diferença enorme.
+            <div className="pt-4 border-t-2 border-dashed border-foreground/20">
+              <p className="text-sm font-display text-center italic">
+                💛 Obrigado pelo apoio! Cada contribuição ajuda a manter o servidor e as atualizações.
               </p>
             </div>
 
-            <Link to="/">
-              <ComicButton variant="primary" size="sm">
-                <Home className="w-4 h-4 mr-1 inline" /> Voltar pro jogo
-              </ComicButton>
-            </Link>
+            <div className="flex justify-center">
+              <Link to="/">
+                <ComicButton variant="ghost" size="sm">
+                  <Home className="w-4 h-4 mr-1 inline" /> Voltar pro jogo
+                </ComicButton>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
