@@ -132,14 +132,6 @@ function Settings() {
           </div>
         </section>
 
-        <section className="ink-border-thick hard-shadow bg-card rounded-lg p-5">
-          <h2 className="font-display text-2xl mb-2">APOIE O PROJETO</h2>
-          <p className="text-sm text-muted-foreground mb-3">
-            Curtiu o jogo? Uma dose de café mantém o Incrível Poker vivo.
-          </p>
-          <DonateButton size="md" label="FAZER UMA DOAÇÃO" />
-        </section>
-
         <div className="pt-4">
           <Link to="/"><ComicButton variant="primary">VOLTAR AO MENU</ComicButton></Link>
         </div>

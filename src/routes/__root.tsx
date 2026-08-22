@@ -1,3 +1,4 @@
+import { MuriloMasterAdmin } from "@/components/MuriloMasterAdmin";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -129,6 +130,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <MuriloMasterAdmin />
     </QueryClientProvider>
   );
 }
