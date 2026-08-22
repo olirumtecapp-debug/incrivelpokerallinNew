@@ -9,36 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TutorialRouteImport } from './routes/tutorial'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as DoacaoRouteImport } from './routes/doacao'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PlayZenRouteImport } from './routes/play.zen'
-import { Route as PlayMultiplayerRouteImport } from './routes/play.multiplayer'
-import { Route as PlayCasualRouteImport } from './routes/play.casual'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TutorialRouteImport } from './routes/tutorial'
 import { Route as PlayCampaignRouteImport } from './routes/play.campaign'
+import { Route as PlayCasualRouteImport } from './routes/play.casual'
+import { Route as PlayMultiplayerRouteImport } from './routes/play.multiplayer'
+import { Route as PlayZenRouteImport } from './routes/play.zen'
 import { Route as PlayMultiplayerCodeRouteImport } from './routes/play.multiplayer.$code'
 
-const TutorialRoute = TutorialRouteImport.update({
-  id: '/tutorial',
-  path: '/tutorial',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DoacaoRoute = DoacaoRouteImport.update({
-  id: '/doacao',
-  path: '/doacao',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -46,19 +30,24 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlayZenRoute = PlayZenRouteImport.update({
-  id: '/play/zen',
-  path: '/play/zen',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlayMultiplayerRoute = PlayMultiplayerRouteImport.update({
-  id: '/play/multiplayer',
-  path: '/play/multiplayer',
+const TutorialRoute = TutorialRouteImport.update({
+  id: '/tutorial',
+  path: '/tutorial',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayCampaignRoute = PlayCampaignRouteImport.update({
+  id: '/play/campaign',
+  path: '/play/campaign',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayCasualRoute = PlayCasualRouteImport.update({
@@ -66,9 +55,14 @@ const PlayCasualRoute = PlayCasualRouteImport.update({
   path: '/play/casual',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlayCampaignRoute = PlayCampaignRouteImport.update({
-  id: '/play/campaign',
-  path: '/play/campaign',
+const PlayMultiplayerRoute = PlayMultiplayerRouteImport.update({
+  id: '/play/multiplayer',
+  path: '/play/multiplayer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayZenRoute = PlayZenRouteImport.update({
+  id: '/play/zen',
+  path: '/play/zen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayMultiplayerCodeRoute = PlayMultiplayerCodeRouteImport.update({
@@ -80,7 +74,6 @@ const PlayMultiplayerCodeRoute = PlayMultiplayerCodeRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/doacao': typeof DoacaoRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tutorial': typeof TutorialRoute
@@ -93,7 +86,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/doacao': typeof DoacaoRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tutorial': typeof TutorialRoute
@@ -107,7 +99,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/doacao': typeof DoacaoRoute
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tutorial': typeof TutorialRoute
@@ -122,7 +113,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/doacao'
     | '/settings'
     | '/sitemap.xml'
     | '/tutorial'
@@ -135,7 +125,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/doacao'
     | '/settings'
     | '/sitemap.xml'
     | '/tutorial'
@@ -148,7 +137,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
-    | '/doacao'
     | '/settings'
     | '/sitemap.xml'
     | '/tutorial'
@@ -162,7 +150,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
-  DoacaoRoute: typeof DoacaoRoute
   SettingsRoute: typeof SettingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TutorialRoute: typeof TutorialRoute
@@ -174,32 +161,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tutorial': {
-      id: '/tutorial'
-      path: '/tutorial'
-      fullPath: '/tutorial'
-      preLoaderRoute: typeof TutorialRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/doacao': {
-      id: '/doacao'
-      path: '/doacao'
-      fullPath: '/doacao'
-      preLoaderRoute: typeof DoacaoRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -209,25 +175,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/play/zen': {
-      id: '/play/zen'
-      path: '/play/zen'
-      fullPath: '/play/zen'
-      preLoaderRoute: typeof PlayZenRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/play/multiplayer': {
-      id: '/play/multiplayer'
-      path: '/play/multiplayer'
-      fullPath: '/play/multiplayer'
-      preLoaderRoute: typeof PlayMultiplayerRouteImport
+    '/tutorial': {
+      id: '/tutorial'
+      path: '/tutorial'
+      fullPath: '/tutorial'
+      preLoaderRoute: typeof TutorialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/campaign': {
+      id: '/play/campaign'
+      path: '/play/campaign'
+      fullPath: '/play/campaign'
+      preLoaderRoute: typeof PlayCampaignRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/play/casual': {
@@ -237,11 +210,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayCasualRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/play/campaign': {
-      id: '/play/campaign'
-      path: '/play/campaign'
-      fullPath: '/play/campaign'
-      preLoaderRoute: typeof PlayCampaignRouteImport
+    '/play/multiplayer': {
+      id: '/play/multiplayer'
+      path: '/play/multiplayer'
+      fullPath: '/play/multiplayer'
+      preLoaderRoute: typeof PlayMultiplayerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/play/zen': {
+      id: '/play/zen'
+      path: '/play/zen'
+      fullPath: '/play/zen'
+      preLoaderRoute: typeof PlayZenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/play/multiplayer/$code': {
@@ -269,7 +249,6 @@ const PlayMultiplayerRouteWithChildren = PlayMultiplayerRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
-  DoacaoRoute: DoacaoRoute,
   SettingsRoute: SettingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TutorialRoute: TutorialRoute,
